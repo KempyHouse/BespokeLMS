@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turner Price Learn — My Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#52A311;      /* Turner Price primary */
+    --green-d:#3F7F0D;
+    --green-tint:#EAF3E1;
+    --purple:#6A3882;     /* Turner Price secondary */
+    --purple-tint:#EFE7F3;
+    --ink:#30302E;
+    --muted:#5B5F62;
+    --bg:#FAF9F5;
+    --paper:#F3F1EA;
+    --line:#E7E4DB;
+    --red:#D64545;
+    --red-tint:#FBEBEB;
+    --amber:#C77A0A;
+    --white:#ffffff;
+    --gutter:48px;
+    --menu-w:336px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Lato',-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);font-size:16px;-webkit-font-smoothing:antialiased;
+  }
+  a{text-decoration:none;color:inherit;}
+  svg{display:block;}
+
+  /* ---------- brand strip ---------- */
+  .brandbar{
+    background:var(--green);color:#fff;font-size:13px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:7px var(--gutter);letter-spacing:.2px;
+  }
+  .brandbar b{font-weight:700;}
+  .brandbar .right{opacity:.92;}
+
+  /* ---------- header ---------- */
+  header.hdr{
+    display:flex;align-items:center;gap:28px;
+    padding:16px var(--gutter);background:#fff;border-bottom:1px solid var(--line);
+  }
+  .logo{display:flex;align-items:center;gap:11px;white-space:nowrap;}
+  .logo .mark{width:38px;height:38px;border-radius:10px;background:var(--green);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:17px;letter-spacing:-.5px;}
+  .logo .wm{font-weight:900;font-size:22px;color:var(--ink);line-height:1;}
+  .logo .tag{display:inline-block;background:var(--green-tint);color:var(--green-d);
+    font-size:11px;font-weight:900;letter-spacing:1px;border-radius:6px;padding:3px 7px;margin-left:2px;text-transform:uppercase;}
+  .search{flex:1;max-width:600px;position:relative;}
+  .search input{width:100%;border:1px solid var(--line);background:#fff;border-radius:24px;
+    padding:11px 46px 11px 20px;font-family:inherit;font-size:14px;color:var(--ink);}
+  .search input::placeholder{color:#9aa0a4;}
+  .search .ic{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;
+    background:var(--green);color:#fff;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;}
+  .hdr-nav{display:flex;align-items:center;gap:22px;font-size:14px;color:var(--ink);}
+  .hdr-nav a{font-weight:700;}
+  .hdr-nav a:hover{color:var(--green-d);}
+  .acct{display:flex;align-items:center;gap:12px;margin-left:4px;}
+  .bell{position:relative;width:36px;height:36px;border-radius:50%;background:var(--paper);
+    display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .bell .dot{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:10px;font-weight:700;
+    border-radius:10px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+  .acct .mini{width:36px;height:36px;border-radius:50%;background:var(--green);color:#fff;font-weight:900;font-size:13px;
+    display:flex;align-items:center;justify-content:center;}
+
+  /* ---------- shortcuts ---------- */
+  .shortcuts{display:flex;flex-wrap:wrap;gap:10px;padding:14px var(--gutter);}
+  .shortcuts a{font-size:13px;font-weight:700;color:var(--ink);background:#fff;border:1px solid var(--line);
+    border-radius:20px;padding:8px 16px;white-space:nowrap;}
+  .shortcuts a.active{background:var(--green);border-color:var(--green);color:#fff;}
+  .shortcuts a:not(.active):hover{border-color:var(--green);color:var(--green-d);}
+
+  /* ---------- body layout ---------- */
+  .body{display:flex;gap:32px;padding:8px var(--gutter) 56px;align-items:flex-start;}
+  .left-menu{flex:0 0 var(--menu-w);max-width:var(--menu-w);}
+  .submenu{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;position:sticky;top:16px;}
+  .submenu .title{color:var(--green-d);text-transform:uppercase;font-size:12px;letter-spacing:.72px;font-weight:900;margin-bottom:8px;}
+  .submenu ul{list-style:none;margin:0;padding:0;}
+  .submenu li a{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink);padding:13px 6px;border-bottom:1px solid var(--line);font-weight:700;}
+  .submenu li:last-child a{border-bottom:0;}
+  .submenu li a .d{width:7px;height:7px;border-radius:50%;background:var(--green);opacity:.5;}
+  .submenu li a:hover{color:var(--green-d);}
+  .submenu li a:hover .d{opacity:1;}
+
+  .content{flex:1 1 auto;min-width:0;}
+  .page-title{display:flex;align-items:baseline;gap:14px;margin:6px 0 4px;}
+  .page-title h1{font-size:26px;font-weight:900;color:var(--ink);margin:0;}
+  .page-title span{font-size:14px;color:var(--muted);}
+
+  /* ---------- profile strip ---------- */
+  .profile{display:flex;align-items:center;gap:20px;background:#fff;border:1px solid var(--line);
+    border-radius:16px;padding:18px 22px;margin:14px 0 22px;}
+  .profile .who{flex:1;min-width:0;}
+  .profile .who b{display:block;font-size:19px;color:var(--ink);}
+  .profile .who .role{color:var(--green-d);font-size:13px;font-weight:700;}
+  .profile .who .org{color:var(--muted);font-size:13px;display:flex;align-items:center;gap:6px;margin-top:2px;}
+  .ring{width:66px;height:66px;position:relative;flex:none;}
+  .ring svg{transform:rotate(-90deg);}
+  .ring .pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .ring .pct b{font-size:16px;color:var(--ink);line-height:1;}
+  .ring .pct small{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
+  .btn{border:0;border-radius:24px;padding:11px 24px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+  .btn-green{background:var(--green);color:#fff;}
+  .btn-green:hover{background:var(--green-d);}
+
+  /* ---------- hero alert ---------- */
+  .hero-alert{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--red-tint);
+    border:1px solid #f1cfcf;border-left:4px solid var(--red);border-radius:12px;padding:13px 18px;margin-bottom:20px;font-size:15px;color:#7a2b2b;}
+  .hero-alert b{color:var(--red);}
+  .hero-alert .spacer{flex:1;}
+  .hero-alert button{background:var(--red);color:#fff;border:0;border-radius:20px;padding:9px 20px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;}
+
+  /* ---------- KPI widgets ---------- */
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+  @media(max-width:1500px){.kpis{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:1000px){.kpis{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:680px){.kpis{grid-template-columns:1fr;}}
+
+  .kpi{background:#fff;border:1px solid var(--line);border-top:3px solid var(--accent,var(--green));border-radius:16px;
+    padding:18px 18px 18px;min-height:208px;display:flex;flex-direction:column;position:relative;cursor:pointer;
+    transition:transform .14s ease, box-shadow .14s ease;--accent:var(--green);--tint:var(--green-tint);}
+  .kpi:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(48,48,46,.13);}
+  .kpi.green{--accent:var(--green);--tint:var(--green-tint);}
+  .kpi.purple{--accent:var(--purple);--tint:var(--purple-tint);}
+  .kpi.red{--accent:var(--red);--tint:var(--red-tint);}
+  .chip{width:40px;height:40px;border-radius:11px;background:var(--tint);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;}
+  .chip svg{width:22px;height:22px;}
+  .kpi .go{position:absolute;top:18px;right:18px;color:var(--accent);opacity:.45;font-size:18px;font-weight:700;}
+  .kpi:hover .go{opacity:1;}
+  .kpi .lab{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);font-weight:900;line-height:1.35;margin-top:14px;min-height:30px;}
+  .kpi .num{font-size:46px;font-weight:900;line-height:1;color:var(--accent);margin:4px 0 2px;letter-spacing:-1px;}
+  .kpi .num small{font-size:17px;color:var(--muted);font-weight:700;letter-spacing:0;}
+  .kpi .sub{font-size:12.5px;color:var(--muted);margin-top:2px;}
+
+  .bar{height:8px;border-radius:6px;background:var(--paper);overflow:hidden;margin-top:auto;}
+  .bar > i{display:block;height:100%;border-radius:6px;background:var(--accent);}
+  .barcap{font-size:11.5px;color:var(--muted);margin-top:7px;}
+  .barcap b.warn{color:var(--red);}
+
+  .pill{display:inline-block;background:var(--red);color:#fff;font-size:9.5px;font-weight:900;letter-spacing:.5px;border-radius:10px;padding:2px 8px;margin-left:6px;vertical-align:middle;}
+  .okstate{display:flex;align-items:center;gap:9px;margin-top:12px;}
+  .okstate .tick{width:34px;height:34px;border-radius:50%;background:var(--green-tint);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;}
+  .okstate b{color:var(--green-d);font-size:16px;}
+  .toggle{position:absolute;bottom:13px;right:15px;font-size:10.5px;color:var(--muted);text-decoration:underline;}
+
+  .resume{background:var(--purple-tint);border-radius:10px;padding:10px 11px;margin-top:auto;}
+  .resume .rt{font-size:11.5px;line-height:1.3;color:var(--ink);font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:7px;}
+  .resume .rrow{display:flex;align-items:center;gap:8px;}
+  .resume .rbar{flex:1;height:6px;border-radius:5px;background:#fff;overflow:hidden;}
+  .resume .rbar > i{display:block;height:100%;background:var(--purple);}
+  .resume .cont{background:var(--purple);color:#fff;border:0;border-radius:14px;font-family:inherit;font-size:11px;font-weight:700;padding:6px 13px;cursor:pointer;white-space:nowrap;}
+
+  .spark{display:flex;align-items:flex-end;gap:3px;height:40px;margin-top:auto;}
+  .spark > i{flex:1;background:var(--accent);border-radius:2px 2px 0 0;opacity:.85;min-height:3px;}
+  .spark > i:last-child{opacity:1;}
+  .trend{font-size:12px;color:var(--muted);margin-top:8px;}
+  .trend .up{color:var(--green-d);font-weight:900;}
+
+  /* drill-down */
+  .drill{display:none;margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
+  .drill.open{display:block;}
+  .drill h3{margin:0 0 12px;font-size:15px;color:var(--ink);}
+  .months{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
+  @media(max-width:900px){.months{grid-template-columns:repeat(3,1fr);}}
+  .month{background:var(--paper);border-radius:9px;padding:10px 12px;}
+  .month small{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
+  .month b{font-size:18px;color:var(--ink);font-weight:900;}
+
+  /* overview */
+  .overview{margin-top:26px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;}
+  .overview h2{font-size:18px;color:var(--ink);margin:0;}
+  .overview p{margin:4px 0 0;color:var(--muted);font-size:13px;}
+  .tabs{display:flex;gap:18px;border-bottom:1px solid var(--line);margin-top:14px;flex-wrap:wrap;}
+  .tabs span{font-size:13px;color:var(--muted);padding:0 0 10px;border-bottom:2px solid transparent;font-weight:700;}
+  .tabs span.on{color:var(--green-d);border-bottom-color:var(--green);}
+  .ghost{height:120px;border-radius:10px;margin-top:16px;background:repeating-linear-gradient(135deg,#f7f6f2,#f7f6f2 12px,#f1efe9 12px,#f1efe9 24px);}
+
+  .note{max-width:1180px;padding:8px var(--gutter) 40px;color:var(--muted);font-size:12.5px;}
+  .note b{color:var(--ink);}
+</style>
+</head>
+<body>
+
+  <div class="brandbar">
+    <span><b>Turner Price Learn</b> &nbsp;·&nbsp; food safety &amp; catering training for your team</span>
+    <span class="right">learn.turner-price.com</span>
+  </div>
+
+  <header class="hdr">
+    <a class="logo" href="#">
+      <span class="mark">TP</span>
+      <span><span class="wm">Turner Price</span><span class="tag">Learn</span></span>
+    </a>
+    <div class="search">
+      <input type="text" placeholder="Search for courses, food safety topics or resources">
+      <button class="ic" aria-label="Search">⌕</button>
+    </div>
+    <nav class="hdr-nav">
+      <a href="#">Support</a>
+      <a href="#">Courses</a>
+      <a href="#">Resources</a>
+    </nav>
+    <div class="acct">
+      <span class="bell">🔔<span class="dot">1</span></span>
+      <span class="mini">BK</span>
+    </div>
+  </header>
+
+  <nav class="shortcuts">
+    <a href="#" class="active">My Dashboard</a>
+    <a href="#">Course Library</a>
+    <a href="#">My Learning</a>
+    <a href="#">My Achievements</a>
+    <a href="#">My Team</a>
+    <a href="#">My Account</a>
+  </nav>
+
+  <div class="body">
+
+    <aside class="left-menu">
+      <div class="submenu">
+        <div class="title">My Dashboard</div>
+        <ul>
+          <li><a href="#"><span class="d"></span> My Learning</a></li>
+          <li><a href="#"><span class="d"></span> My Certificates</a></li>
+          <li><a href="#"><span class="d"></span> My Team</a></li>
+          <li><a href="#"><span class="d"></span> My Account</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="page-title"><h1>My Dashboard</h1><span>Overview</span></div>
+
+      <!-- profile with illustrated avatar -->
+      <div class="profile">
+        <svg viewBox="0 0 96 96" width="72" height="72" role="img" aria-label="Profile photo">
+          <defs><clipPath id="cc"><circle cx="48" cy="48" r="48"/></clipPath></defs>
+          <g clip-path="url(#cc)">
+            <rect width="96" height="96" fill="#EAF3E1"/>
+            <path d="M12 96 C15 73 30 65 48 65 C66 65 81 73 84 96 Z" fill="#ffffff" stroke="#E3E0D8" stroke-width="1"/>
+            <path d="M40 68 L48 77 L56 68 L52 64 L44 64 Z" fill="#F3F1EA"/>
+            <rect x="42" y="56" width="12" height="13" rx="5" fill="#E8B488"/>
+            <circle cx="48" cy="43" r="16" fill="#F2C49B"/>
+            <path d="M31 45 C31 29 65 29 65 45 C65 39 59 31 48 31 C37 31 31 39 31 45 Z" fill="#6B4A2B"/>
+            <path d="M31 45 C30 53 31 57 33 60 L34 45 Z" fill="#6B4A2B"/>
+            <path d="M62 45 C63 53 62 57 60 60 L59 45 Z" fill="#6B4A2B"/>
+            <circle cx="42.5" cy="44" r="1.7" fill="#3a2f2a"/>
+            <circle cx="53.5" cy="44" r="1.7" fill="#3a2f2a"/>
+            <path d="M43 50 Q48 54 53 50" stroke="#9c5a3c" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M33 31 C28 31 27 24 32 22 C29 15 41 12 45 18 C47 12 58 13 57 20 C63 17 68 24 63 28 C65 29 65 31 63 32 L33 32 Z" fill="#ffffff" stroke="#E3E0D8" stroke-width="1"/>
+            <rect x="33" y="30" width="30" height="5" rx="1" fill="#ffffff" stroke="#E3E0D8" stroke-width="1"/>
+          </g>
+          <circle cx="48" cy="48" r="47" fill="none" stroke="#52A311" stroke-width="2"/>
+        </svg>
+        <div class="who">
+          <b>Bernadette Kelly</b>
+          <div class="role">Catering Manager</div>
+          <div class="org">🏫 All Saint's Catholic Primary School, Lanchester</div>
+        </div>
+        <div class="ring">
+          <svg width="66" height="66" viewBox="0 0 66 66">
+            <circle cx="33" cy="33" r="28" fill="none" stroke="#E7E4DB" stroke-width="7"/>
+            <circle cx="33" cy="33" r="28" fill="none" stroke="#52A311" stroke-width="7"
+                    stroke-linecap="round" stroke-dasharray="175.9" stroke-dashoffset="114.3"/>
+          </svg>
+          <div class="pct"><b>35%</b><small>Complete</small></div>
+        </div>
+        <button class="btn btn-green">Find a Course</button>
+      </div>
+
+      <div class="hero-alert">
+        <span>You have <b>9 courses</b> still to complete — <b>3 are overdue</b>.</span>
+        <span class="spacer"></span>
+        <button>Review now ›</button>
+      </div>
+
+      <div class="kpis">
+
+        <!-- 1. To complete -->
+        <div class="kpi green" title="Open the list of courses still to complete">
+          <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M9 10h6M9 14h4"/></svg></span>
+          <span class="go">›</span>
+          <div class="lab">Courses to complete</div>
+          <div class="num">9 <small>/ 24</small></div>
+          <div class="sub">Outstanding &amp; not yet completed</div>
+          <div class="bar"><i style="width:62%"></i></div>
+          <div class="barcap">15 of 24 assigned done · incl. <b class="warn">3 overdue</b></div>
+        </div>
+
+        <!-- 2. Overdue -->
+        <div class="kpi red" id="overdueCard" title="Open overdue courses, most-overdue first">
+          <span class="chip" id="ovChip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2"/><path d="M5 3 2.5 5.5M19 3l2.5 2.5"/></svg></span>
+          <span class="go">›</span>
+          <div class="lab" id="ovLab">Overdue <span class="pill">URGENT</span></div>
+          <div id="ovBody">
+            <div class="num">3</div>
+            <div class="sub">Oldest is <b>14 days</b> overdue</div>
+            <div class="barcap" style="margin-top:auto">2 more due in the next 7 days</div>
+          </div>
+          <a class="toggle" href="javascript:void(0)" onclick="toggleOverdue(event)">show zero-state</a>
+        </div>
+
+        <!-- 3. In progress -->
+        <div class="kpi purple" title="Resume a course you've started">
+          <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5.5 3.5L10 15.5z" fill="currentColor" stroke="none"/></svg></span>
+          <span class="go">›</span>
+          <div class="lab">In progress</div>
+          <div class="num">5</div>
+          <div class="resume">
+            <div class="rt">Level 3 Food Safety &amp; Hygiene for Supervisors</div>
+            <div class="rrow">
+              <span class="rbar"><i style="width:60%"></i></span>
+              <button class="cont">Continue</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Completed last 12 months -->
+        <div class="kpi green" title="View completed courses &amp; certificates">
+          <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M9 14.5 7.5 21 12 18.5 16.5 21 15 14.5"/></svg></span>
+          <span class="go">›</span>
+          <div class="lab">Completed · last 12 months</div>
+          <div class="num">18</div>
+          <div class="spark">
+            <i style="height:35%"></i><i style="height:50%"></i><i style="height:30%"></i>
+            <i style="height:65%"></i><i style="height:45%"></i><i style="height:80%"></i>
+            <i style="height:55%"></i><i style="height:40%"></i><i style="height:70%"></i>
+            <i style="height:60%"></i><i style="height:90%"></i><i style="height:75%"></i>
+          </div>
+          <div class="trend"><span class="up">▲ 6</span> vs prior 12 months</div>
+        </div>
+
+        <!-- 5. Training time last 12 months -->
+        <div class="kpi purple" id="timeCard" title="Click for month-by-month breakdown" onclick="toggleDrill()">
+          <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></svg></span>
+          <span class="go">›</span>
+          <div class="lab">Training time · last 12 months</div>
+          <div class="num">31<small>h</small> 45<small>m</small></div>
+          <div class="spark">
+            <i style="height:40%"></i><i style="height:55%"></i><i style="height:35%"></i>
+            <i style="height:70%"></i><i style="height:50%"></i><i style="height:85%"></i>
+            <i style="height:60%"></i><i style="height:45%"></i><i style="height:75%"></i>
+            <i style="height:65%"></i><i style="height:95%"></i><i style="height:80%"></i>
+          </div>
+          <div class="barcap" style="margin-top:8px">Click for monthly breakdown ›</div>
+        </div>
+
+      </div>
+
+      <div class="drill" id="drill">
+        <h3>Training time — month by month (last 12 months)</h3>
+        <div class="months">
+          <div class="month"><small>Jul</small><b>2h 10m</b></div>
+          <div class="month"><small>Aug</small><b>1h 35m</b></div>
+          <div class="month"><small>Sep</small><b>3h 20m</b></div>
+          <div class="month"><small>Oct</small><b>2h 50m</b></div>
+          <div class="month"><small>Nov</small><b>2h 05m</b></div>
+          <div class="month"><small>Dec</small><b>3h 55m</b></div>
+          <div class="month"><small>Jan</small><b>2h 30m</b></div>
+          <div class="month"><small>Feb</small><b>1h 45m</b></div>
+          <div class="month"><small>Mar</small><b>3h 40m</b></div>
+          <div class="month"><small>Apr</small><b>2h 20m</b></div>
+          <div class="month"><small>May</small><b>4h 15m</b></div>
+          <div class="month"><small>Jun</small><b>3h 00m</b></div>
+        </div>
+      </div>
+
+      <section class="overview">
+        <h2>My Overview</h2>
+        <p>An overview of all your training and development</p>
+        <div class="tabs">
+          <span class="on">Overview</span><span>Scheduled Training</span>
+          <span>Completed Training</span><span>Feedback &amp; Ratings</span><span>Event Log</span>
+        </div>
+        <div class="ghost"></div>
+      </section>
+    </main>
+  </div>
+
+  <p class="note">Mockup for developer reference — rebranded as <b>Turner Price Learn</b> (learn.turner-price.com) using the
+  Turner Price palette: primary green <b style="color:var(--green-d)">#52A311</b> and secondary purple
+  <b style="color:var(--purple)">#6A3882</b>, warm off-white background and Lato type. Mock user <b>Bernadette Kelly</b>,
+  Catering Manager at All Saint's Catholic Primary School, Lanchester. Course names and figures are sample data.
+  The “Overdue” card has a <a href="javascript:void(0)" onclick="toggleOverdue(event)" style="text-decoration:underline;color:var(--green-d)">zero-state toggle</a>;
+  the “Training time” card is clickable to reveal its monthly breakdown.</p>
+
+<script>
+  function toggleDrill(){
+    var d=document.getElementById('drill');
+    d.classList.toggle('open');
+    if(d.classList.contains('open')) d.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  var overdueZero=false;
+  function toggleOverdue(e){
+    if(e){e.stopPropagation();}
+    overdueZero=!overdueZero;
+    var card=document.getElementById('overdueCard');
+    var body=document.getElementById('ovBody');
+    var lab=document.getElementById('ovLab');
+    if(overdueZero){
+      card.classList.remove('red');card.classList.add('green');
+      lab.innerHTML='Overdue';
+      body.innerHTML='<div class="okstate"><span class="tick">✓</span><b>All up to date</b></div>'+
+        '<div class="barcap" style="margin-top:14px">Nothing overdue — nice work</div>';
+    }else{
+      card.classList.remove('green');card.classList.add('red');
+      lab.innerHTML='Overdue <span class="pill">URGENT</span>';
+      body.innerHTML='<div class="num">3</div>'+
+        '<div class="sub">Oldest is <b>14 days</b> overdue</div>'+
+        '<div class="barcap" style="margin-top:auto">2 more due in the next 7 days</div>';
+    }
+  }
+</script>
+</body>
+</html>

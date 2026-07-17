@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teach HQ — Dashboard header (Tailwind v4)</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<!-- Tailwind v4 Play CDN (prototype only; use a build step in production) -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style type="text/tailwindcss">
+  @theme {
+    --color-teachhq: #009DE1;        /* brand blue, defined once */
+    --color-teachhq-dark: #007bb1;   /* hover / text-on-light */
+    --font-sans: "Lato", ui-sans-serif, system-ui, sans-serif;
+  }
+</style>
+<style>body{font-family:"Lato",system-ui,sans-serif;}</style>
+</head>
+<body class="bg-slate-50 p-6 text-slate-900">
+
+  <!-- ================================================================= -->
+  <!--  Dashboard identity / action header — Tailwind v4                 -->
+  <!--  Two zones: identity (left) and status + primary action (right).  -->
+  <!--  Brand blue comes from @theme: bg-teachhq / hover:bg-teachhq-dark. -->
+  <!-- ================================================================= -->
+  <div class="mx-auto max-w-6xl">
+    <h1 class="mb-4 text-xl font-black text-slate-700">My Dashboard</h1>
+
+    <div class="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between lg:gap-6 xl:px-6">
+
+      <!-- LEFT: identity ladder -->
+      <div class="flex min-w-0 items-center gap-4">
+        <span class="flex h-14 w-14 flex-none items-center justify-center rounded-full bg-slate-700 text-lg font-bold text-white">AK</span>
+        <div class="min-w-0">
+          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Overview</p>
+          <h2 class="mt-1 text-2xl font-black leading-tight text-slate-900">Andrew Kemp</h2>
+          <p class="mt-1 text-sm text-slate-500">CEO (Chief Executive Officer)</p>
+        </div>
+      </div>
+
+      <!-- RIGHT: completion chip + primary CTA as one aligned group -->
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+
+        <!-- completion chip with mini progress ring -->
+        <div class="inline-flex items-center gap-2.5 rounded-full bg-sky-50 px-3 py-2 text-sm font-semibold text-teachhq-dark">
+          <span class="relative inline-flex h-7 w-7 flex-none items-center justify-center">
+            <svg class="h-7 w-7 -rotate-90" viewBox="0 0 36 36" aria-hidden="true">
+              <circle cx="18" cy="18" r="15" fill="none" stroke="#dbeafe" stroke-width="5"/>
+              <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" stroke-width="5"
+                      stroke-linecap="round" stroke-dasharray="94.2" stroke-dashoffset="61.2"/>
+            </svg>
+          </span>
+          <span class="tabular-nums">35% complete</span>
+        </div>
+
+        <!-- primary CTA -->
+        <button class="inline-flex items-center justify-center gap-2 rounded-xl bg-teachhq px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-teachhq-dark focus:outline-none focus:ring-2 focus:ring-teachhq focus:ring-offset-2">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 2v4M16 2v4M3 10h18M5 6h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"/>
+          </svg>
+          Schedule Course
+        </button>
+      </div>
+    </div>
+
+    <p class="mt-4 max-w-3xl text-xs leading-relaxed text-slate-400">
+      Self-contained Tailwind v4 header panel. Brand blue is defined once via <code>@theme</code>
+      (<span class="font-semibold text-teachhq-dark">--color-teachhq&nbsp;#009DE1</span>) and reused as
+      <code>bg-teachhq</code>, <code>hover:bg-teachhq-dark</code>, <code>text-teachhq-dark</code> and
+      <code>focus:ring-teachhq</code> — no repeated hex values. Markup carries all layout, responsive
+      stacking and state, per Tailwind's intended single-file pattern.
+    </p>
+  </div>
+
+</body>
+</html>
