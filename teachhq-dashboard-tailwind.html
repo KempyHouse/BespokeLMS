@@ -216,7 +216,7 @@
   <!-- ===== promo strip (very slim) ===== -->
   <div class="bg-teachhq px-4 py-1 text-center text-[12px] text-white sm:px-6 lg:px-12">
     All courses are currently free of charge!
-    <a href="#" class="ml-1.5 font-bold underline">Browse Courses Library ›</a>
+    <a href="#" onclick="goLibrary();return false;" class="ml-1.5 font-bold underline">Browse Courses Library ›</a>
   </div>
 
   <!-- ===== ROW 1 — utility bar (light weight) ===== -->
@@ -289,14 +289,14 @@
           <div class="mb-2.5 shrink-0 text-xs font-bold uppercase tracking-[0.06em] text-teachhq">My Workspace</div>
           <div class="rail-scroll lg:min-h-0 lg:flex-1">
           <ul>
-            <li><a href="#" aria-current="page" title="Courses in progress and due" class="rail-link rail-active flex items-center gap-2.5 border-b border-[#e7e4e0] py-2.5 text-sm font-medium text-slatecard transition hover:text-teachhq"><svg class="nav-ico h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg><span class="min-w-0 flex-1 truncate font-medium">My Learning</span></a></li>
+            <li><a href="#" id="navMyLearning" onclick="myNav('dashboard');return false;" aria-current="page" title="Courses in progress and due" class="rail-link rail-active flex items-center gap-2.5 border-b border-[#e7e4e0] py-2.5 text-sm font-medium text-slatecard transition hover:text-teachhq"><svg class="nav-ico h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg><span class="min-w-0 flex-1 truncate font-medium">My Learning</span></a></li>
             <li><a href="#" title="View and download achievements" class="rail-link flex items-center gap-2.5 border-b border-[#e7e4e0] py-2.5 text-sm font-medium text-slatecard transition hover:text-teachhq"><svg class="nav-ico h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg><span class="min-w-0 flex-1 truncate font-medium">My Certificates</span></a></li>
             <li><a href="#" title="Profile and preferences" class="rail-link flex items-center gap-2.5 border-b border-[#e7e4e0] py-2.5 text-sm font-medium text-slatecard transition hover:text-teachhq"><svg class="nav-ico h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="min-w-0 flex-1 truncate font-medium">My Account</span></a></li>
             <li><a href="#" title="Organisation and billing details" class="rail-link flex items-center gap-2.5 py-2.5 text-sm font-medium text-slatecard transition hover:text-teachhq"><svg class="nav-ico h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M19 21V9a2 2 0 0 0-2-2h-2"/><path d="M9 7h.01M9 11h.01M9 15h.01"/></svg><span class="min-w-0 flex-1 truncate font-medium">My Business</span></a></li>
           </ul>
           <div class="mb-3 mt-6 border-t border-[#e7e4e0] pt-5 text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">Browse</div>
           <ul>
-            <li><a href="#" title="Explore all available courses" class="rail-link flex items-center gap-2.5 border-b border-[#e7e4e0] py-2.5 text-sm font-medium text-slatecard transition hover:text-teachhq"><svg class="nav-ico h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span class="min-w-0 flex-1 truncate font-medium">Course Library</span></a></li>
+            <li><a href="#" id="navCourseLibrary" onclick="myNav('library');return false;" title="Explore all available courses" class="rail-link flex items-center gap-2.5 border-b border-[#e7e4e0] py-2.5 text-sm font-medium text-slatecard transition hover:text-teachhq"><svg class="nav-ico h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span class="min-w-0 flex-1 truncate font-medium">Course Library</span></a></li>
             <li><a href="#" title="Badges and milestones earned" class="rail-link flex items-center gap-2.5 border-b border-[#e7e4e0] py-2.5 text-sm font-medium text-slatecard transition hover:text-teachhq"><svg class="nav-ico h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg><span class="min-w-0 flex-1 truncate font-medium">Achievements</span></a></li>
             <li><a href="#" title="Guides, templates and downloads" class="rail-link flex items-center gap-2.5 border-b border-[#e7e4e0] py-2.5 text-sm font-medium text-slatecard transition hover:text-teachhq"><svg class="nav-ico h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span class="min-w-0 flex-1 truncate font-medium">Resources</span></a></li>
             <li><a href="#" title="FAQs and contact the team" class="rail-link flex items-center gap-2.5 py-2.5 text-sm font-medium text-slatecard transition hover:text-teachhq"><svg class="nav-ico h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/><line x1="9.17" y1="14.83" x2="4.93" y2="19.07"/></svg><span class="min-w-0 flex-1 truncate font-medium">Help &amp; support</span></a></li>
@@ -310,7 +310,7 @@
       </div>
     </aside>
 
-    <main class="min-w-0 flex-1">
+    <main id="myDash" class="min-w-0 flex-1">
       <h1 class="flex min-h-[55px] items-center text-2xl font-black text-slatecard">My Dashboard</h1>
 
       <!-- identity / action header -->
@@ -450,6 +450,132 @@
         </div>
         <div class="mt-4 h-[120px] rounded-lg" style="background:repeating-linear-gradient(135deg,#f7f6f4,#f7f6f4 12px,#f1efec 12px,#f1efec 24px)"></div>
       </section>
+    </main>
+    <!-- ================= COURSE LIBRARY (learner browse) ================= -->
+    <main id="myLibrary" style="display:none" class="min-w-0 flex-1">
+      <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+        <h1 class="flex min-h-[55px] items-center text-2xl font-black text-slatecard">Course Library</h1>
+        <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-[13px] text-slate-400">
+          <a href="#" onclick="myNav('dashboard');return false;" class="transition hover:text-teachhq">My Dashboard</a>
+          <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          <span class="font-semibold text-slate-500">Course Library</span>
+        </nav>
+      </div>
+
+      <!-- hero -->
+      <section class="my-4 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-panel-quiet">
+        <div class="relative flex flex-col gap-6 p-5 lg:flex-row lg:items-center lg:justify-between xl:p-6">
+          <span class="pointer-events-none absolute -right-16 -top-20 hidden h-56 w-56 rounded-full bg-sky-50/70 blur-2xl lg:block"></span>
+          <div class="relative min-w-0 lg:max-w-xl">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-bold text-teachhq-dark">
+              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>
+              CPD-certified catalogue
+            </span>
+            <h2 class="mt-2.5 text-2xl font-black leading-tight text-slate-900">Browse the Course Library</h2>
+            <p class="mt-1.5 text-sm leading-relaxed text-slate-500">Explore every CPD-certified course available to you across catering, hospitality, safety and wellbeing. Enrol in your own time — all courses are free while the launch offer runs.</p>
+            <div class="relative mt-4 max-w-md">
+              <svg class="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input id="libSearch" type="text" oninput="libOnSearch(this.value)" placeholder="Search courses, topics or categories"
+                class="w-full rounded-full border border-slate-200 bg-white py-2.5 pl-11 pr-4 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teachhq">
+            </div>
+          </div>
+          <div class="relative grid w-full shrink-0 grid-cols-2 gap-3 lg:w-auto lg:grid-cols-2 xl:gap-3.5">
+            <div class="rounded-xl border border-slate-200 bg-paper/60 px-4 py-3 tabular-nums lg:w-[132px]">
+              <div class="text-[22px] font-black leading-none text-slatecard">28</div>
+              <div class="mt-1 text-[11.5px] font-semibold text-slate-500">Courses</div>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-paper/60 px-4 py-3 tabular-nums lg:w-[132px]">
+              <div class="text-[22px] font-black leading-none text-slatecard">13</div>
+              <div class="mt-1 text-[11.5px] font-semibold text-slate-500">Categories</div>
+            </div>
+            <div class="rounded-xl border border-sky-100 bg-sky-50/70 px-4 py-3 tabular-nums lg:w-[132px]">
+              <div class="text-[22px] font-black leading-none text-teachhq-dark">19</div>
+              <div class="mt-1 text-[11.5px] font-semibold text-teachhq-dark/80">Available now</div>
+            </div>
+            <div class="rounded-xl border border-emerald-100 bg-emerald-50/70 px-4 py-3 tabular-nums lg:w-[132px]">
+              <div class="text-[22px] font-black leading-none text-emerald-700">6</div>
+              <div class="mt-1 text-[11.5px] font-semibold text-emerald-700/80">You've completed</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- assigned-to-me callout -->
+      <button id="libAssignedBanner" onclick="libSetStatus('assigned')" type="button"
+        class="group flex w-full items-center gap-3 rounded-xl border border-[#f6e2bf] bg-rag-amber-soft px-4 py-3 text-left shadow-panel transition hover:-translate-y-px hover:shadow-lift focus:outline-none focus:ring-2 focus:ring-teachhq focus:ring-offset-1">
+        <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-white/70 text-rag-amber-strong">
+          <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4M16 2v4M3 10h18M5 6h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"/></svg>
+        </span>
+        <span class="min-w-0 flex-1">
+          <span class="block text-sm font-bold text-[#7a4a0b]"><span id="libAssignedCount">2</span> courses assigned to you &middot; due soon</span>
+          <span class="block text-[12.5px] text-[#9a6a1f]">Required training set by your manager — get these done first.</span>
+        </span>
+        <span class="hidden shrink-0 items-center gap-1 text-[13px] font-bold text-[#7a4a0b] transition group-hover:gap-1.5 sm:inline-flex">View <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+      </button>
+
+      <!-- jump back in (in-progress) -->
+      <div id="libContinueWrap" class="mt-6">
+        <div class="my-3 flex items-center gap-3">
+          <h2 class="text-xs font-black uppercase tracking-[0.05em] text-slate-500">Jump back in</h2>
+          <span class="h-px flex-1 bg-slate-200"></span>
+          <span class="text-[12px] font-semibold text-slate-400">In progress</span>
+        </div>
+        <div id="libContinue" class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"></div>
+      </div>
+
+      <!-- all courses + toolbar -->
+      <div class="mt-7">
+        <div class="my-3 flex items-center gap-3">
+          <h2 class="text-xs font-black uppercase tracking-[0.05em] text-slate-500">All courses</h2>
+          <span class="h-px flex-1 bg-slate-200"></span>
+        </div>
+
+        <div class="flex flex-col gap-3.5 rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-panel-quiet xl:flex-row xl:items-start xl:justify-between">
+          <div id="libCats" class="flex min-w-0 flex-1 flex-wrap items-center gap-2"></div>
+          <div class="flex shrink-0 flex-wrap items-center gap-2.5">
+            <select id="libStatus" onchange="libSetStatus(this.value)" aria-label="Filter by status"
+              class="rounded-xl border border-slate-200 bg-white py-2 pl-3.5 text-[13px] font-semibold text-slatecard focus:outline-none focus:ring-2 focus:ring-teachhq">
+              <option value="all">All statuses</option>
+              <option value="assigned">Assigned to me</option>
+              <option value="inprogress">In progress</option>
+              <option value="completed">Completed</option>
+              <option value="available">Not started</option>
+              <option value="soon">Coming soon</option>
+            </select>
+            <select id="libSort" onchange="libSetSort(this.value)" aria-label="Sort courses"
+              class="rounded-xl border border-slate-200 bg-white py-2 pl-3.5 text-[13px] font-semibold text-slatecard focus:outline-none focus:ring-2 focus:ring-teachhq">
+              <option value="recommended">Sort: Recommended</option>
+              <option value="az">Title A–Z</option>
+              <option value="short">Shortest first</option>
+              <option value="long">Longest first</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-1 mt-3.5 flex items-center justify-between gap-3">
+          <p id="libCount" class="text-[13px] text-slate-500"></p>
+          <button id="libClear" onclick="libClear()" type="button" class="hidden items-center gap-1 text-[13px] font-bold text-teachhq transition hover:text-teachhq-dark">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>Clear filters
+          </button>
+        </div>
+
+        <div id="libGrid" class="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-3"></div>
+
+        <div id="libEmpty" class="hidden flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white/60 px-6 py-14 text-center">
+          <span class="flex h-12 w-12 items-center justify-center rounded-full bg-paper text-slate-400">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </span>
+          <p class="mt-3 text-sm font-bold text-slatecard">No courses match your filters</p>
+          <p class="mt-1 text-[13px] text-slate-500">Try a different category or clear your search.</p>
+          <button onclick="libClear()" type="button" class="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-teachhq px-4 py-2 text-[13px] font-bold text-white shadow-cta transition hover:-translate-y-px hover:bg-teachhq-dark hover:shadow-cta-hover">Reset filters</button>
+        </div>
+      </div>
+
+      <!-- lightweight toast -->
+      <div id="libToast" class="pointer-events-none fixed bottom-6 left-1/2 z-[90] hidden -translate-x-1/2 items-center gap-2 rounded-xl bg-slatecard px-4 py-2.5 text-sm font-semibold text-white shadow-lift">
+        <svg class="h-4 w-4 flex-none text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        <span id="libToastMsg">Done</span>
+      </div>
     </main>
   </div>
 
@@ -2602,11 +2728,243 @@
     if(def) mxvLoad(def.id);
   }
 
+  /* ===================== COURSE LIBRARY (learner browse) ===================== */
+  // Category -> [bg, text] tint classes (soft pills, TeachHQ palette)
+  var LIB_CATS = {
+    'Food Hygiene':['bg-sky-50','text-sky-700'],
+    'Allergen Management':['bg-rose-50','text-rose-700'],
+    'Basic First Aid':['bg-red-50','text-red-700'],
+    'Health & Safety':['bg-amber-50','text-amber-700'],
+    'Safeguarding':['bg-violet-50','text-violet-700'],
+    'Business Essentials':['bg-indigo-50','text-indigo-700'],
+    'Nutrition & Food Quality':['bg-emerald-50','text-emerald-700'],
+    'Dietary Health & Wellbeing':['bg-teal-50','text-teal-700'],
+    'Workplace, Compliance & HR':['bg-slate-100','text-slate-600'],
+    'Premises & Licences':['bg-orange-50','text-orange-700'],
+    'Neurodiversity & Support':['bg-fuchsia-50','text-fuchsia-700'],
+    'Inclusive Service':['bg-cyan-50','text-cyan-700'],
+    'Food Safety Management':['bg-lime-50','text-lime-700']
+  };
+  var LIB_CAT_LIST = ['Food Hygiene','Allergen Management','Basic First Aid','Health & Safety','Safeguarding','Business Essentials','Nutrition & Food Quality','Dietary Health & Wellbeing','Workplace, Compliance & HR','Premises & Licences','Neurodiversity & Support','Inclusive Service','Food Safety Management'];
+
+  // Mock catalogue — courses & details from foodcompliancehq.com/courses/library,
+  // with Emma Wilkinson's (Catering Manager) personal learner states layered on top.
+  // s: completed | inprogress | assigned | available | soon
+  var LIB = [
+    {t:'Food Allergen Awareness for Catering & Hospitality', c:'Allergen Management', lvl:'', min:90, price:'£4.99', cr:1, acc:'', s:'completed', p:100, due:'', d:'Identify and manage the 14 major allergens, prevent cross-contamination and meet Food Standards Agency guidance.'},
+    {t:'Food Hygiene & Safety Level 2 for Catering & Hospitality', c:'Food Hygiene', lvl:'Level 2', min:210, price:'£4.99', cr:1, acc:'RSPH & CIEH mapped', s:'completed', p:100, due:'', d:'CPD-certified food hygiene mapped to RSPH & CIEH Level 2 — HACCP, temperature control and safe food handling.'},
+    {t:'Allergic Reactions & Anaphylaxis in Catering & Hospitality', c:'Basic First Aid', lvl:'', min:30, price:'£3.99', cr:1, acc:'', s:'inprogress', p:60, due:'', d:'Recognise and respond quickly to allergic reactions and anaphylaxis in food-service settings.'},
+    {t:'The Art of Good Customer Service in Catering & Hospitality', c:'Business Essentials', lvl:'', min:90, price:'£3.99', cr:1, acc:'', s:'completed', p:100, due:'', d:'Practical skills for delivering warm, professional and memorable customer service every shift.'},
+    {t:'Autism Awareness in Catering & Hospitality', c:'Neurodiversity & Support', lvl:'', min:60, price:'', cr:0, acc:'', s:'soon', p:0, due:'', d:'Support autistic colleagues and customers with practical communication and environment tips.'},
+    {t:'Balanced Nutrition in Education', c:'Nutrition & Food Quality', lvl:'', min:60, price:'', cr:0, acc:'', s:'soon', p:0, due:'', d:'How nutrition shapes learning, focus and wellbeing across schools and colleges.'},
+    {t:'Bullying & Harassment Awareness', c:'Workplace, Compliance & HR', lvl:'', min:60, price:'£3.99', cr:1, acc:'', s:'available', p:0, due:'', d:'Recognise, prevent and address bullying and harassment in hospitality workplaces.'},
+    {t:'Conflict Management in Licensed Venues', c:'Health & Safety', lvl:'', min:60, price:'£3.99', cr:1, acc:'', s:'available', p:0, due:'', d:'Prevent, de-escalate and safely resolve incidents in pubs, bars and licensed venues.'},
+    {t:'Cooking Oils & Kitchen Practices', c:'Food Safety Management', lvl:'', min:60, price:'', cr:0, acc:'', s:'soon', p:0, due:'', d:'The science of cooking oils, sustainability and everyday kitchen best practice.'},
+    {t:'Cost Control & Profitability', c:'Business Essentials', lvl:'', min:60, price:'', cr:0, acc:'', s:'soon', p:0, due:'', d:'Manage food costs, cut waste and protect margins without compromising quality.'},
+    {t:'Dementia Compassion in Catering & Hospitality', c:'Safeguarding', lvl:'', min:60, price:'£3.99', cr:1, acc:'', s:'available', p:0, due:'', d:'Practical skills and empathy to support customers living with dementia.'},
+    {t:'Display Screen Equipment (DSE)', c:'Health & Safety', lvl:'', min:30, price:'£3.99', cr:1, acc:'', s:'completed', p:100, due:'', d:'Set up and use display screen equipment safely, with a focus on ergonomics and comfort.'},
+    {t:'Fire Safety Awareness Part 1 for Catering & Hospitality', c:'Health & Safety', lvl:'', min:60, price:'£4.99', cr:1, acc:'', s:'completed', p:100, due:'', d:'Fire prevention, risk assessment and emergency response for catering environments.'},
+    {t:'Food Hygiene & Safety Level 2 for Primary Schools', c:'Food Hygiene', lvl:'Level 2', min:120, price:'£3.99', cr:1, acc:'RSPH & CIEH mapped', s:'assigned', p:0, due:'in 4 days', d:'A practical Level 2 course for primary-school catering teams — allergens, HACCP and safe handling.'},
+    {t:'Handling Complaints Effectively in Catering & Hospitality', c:'Business Essentials', lvl:'', min:30, price:'£3.99', cr:1, acc:'', s:'completed', p:100, due:'', d:'Turn complaints into loyalty with confident, professional resolution techniques.'},
+    {t:'Hydration Matters', c:'Dietary Health & Wellbeing', lvl:'', min:60, price:'', cr:0, acc:'', s:'soon', p:0, due:'', d:'Why hydration matters for staff performance and customer wellbeing.'},
+    {t:'Inclusive Dining in Catering & Hospitality', c:'Inclusive Service', lvl:'', min:60, price:'', cr:0, acc:'', s:'soon', p:0, due:'', d:'Design menus and service styles that welcome diverse dietary and access needs.'},
+    {t:'Introduction to Safeguarding in Catering & Hospitality', c:'Safeguarding', lvl:'', min:60, price:'', cr:0, acc:'', s:'soon', p:0, due:'', d:'Core knowledge and practices to protect and promote the wellbeing of others.'},
+    {t:'Modern Slavery Awareness', c:'Safeguarding', lvl:'', min:60, price:'£3.99', cr:1, acc:'', s:'inprogress', p:30, due:'', d:'Spot the signs of exploitation and know how to report and prevent modern slavery.'},
+    {t:'Obstructed Airways & Choking in Catering & Hospitality', c:'Basic First Aid', lvl:'', min:30, price:'£3.99', cr:1, acc:'', s:'available', p:0, due:'', d:'First-aid skills to act fast and safely in choking emergencies.'},
+    {t:'Planning First Aid Requirements for Employers & Managers', c:'Basic First Aid', lvl:'', min:60, price:'£3.99', cr:1, acc:'', s:'assigned', p:0, due:'in 12 days', d:'Assess and plan the right first-aid provision for your workplace.'},
+    {t:'Reducing Food Waste for Operational Excellence', c:'Food Hygiene', lvl:'', min:90, price:'£3.99', cr:1, acc:'', s:'inprogress', p:45, due:'', d:'Cut food waste, improve kitchen efficiency and meet UK requirements.'},
+    {t:'Spiking Awareness & Prevention for Bars, Pubs & Nightclubs', c:'Safeguarding', lvl:'', min:60, price:'£3.99', cr:1, acc:'', s:'available', p:0, due:'', d:'Identify, prevent and respond to drink and needle spiking.'},
+    {t:'Spillage Management in Licensed Venues', c:'Health & Safety', lvl:'', min:60, price:'£3.99', cr:1, acc:'', s:'available', p:0, due:'', d:'Respond safely to spillages and reduce slip-and-trip risks in licensed venues.'},
+    {t:'The Art of Menu Design in Catering & Hospitality', c:'Nutrition & Food Quality', lvl:'', min:60, price:'', cr:0, acc:'', s:'soon', p:0, due:'', d:'Create balanced, appealing menus that meet customer expectations and dietary standards.'},
+    {t:'Think Before You Serve: Alcohol Safety Essentials', c:'Premises & Licences', lvl:'', min:60, price:'£3.99', cr:1, acc:'', s:'available', p:0, due:'', d:'UK alcohol law, Challenge 25 and refusing service with confidence.'},
+    {t:'Understanding Diabetes in Catering & Hospitality', c:'Dietary Health & Wellbeing', lvl:'', min:60, price:'£3.99', cr:1, acc:'', s:'available', p:0, due:'', d:'Support customers with diabetes through informed menu planning and emergency awareness.'},
+    {t:'Workplace Wellness for Team Health', c:'Workplace, Compliance & HR', lvl:'', min:60, price:'', cr:0, acc:'', s:'soon', p:0, due:'', d:'Stress management, nutrition, rest and communication for healthier, happier teams.'}
+  ];
+
+  var libState = {cat:'all', status:'all', q:'', sort:'recommended'};
+  var LIB_RANK = {assigned:0, inprogress:1, available:2, completed:3, soon:4};
+
+  function libEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function libFmtDur(m){ if(m<60) return m+' min'; var h=Math.floor(m/60), r=m%60; return h+'h'+(r?' '+r+'m':''); }
+  function libCatCls(c){ var v=LIB_CATS[c]||['bg-slate-100','text-slate-600']; return v[0]+' '+v[1]; }
+  function libPill(c){ return '<span class="rounded-full '+libCatCls(c)+' px-2.5 py-1 text-[11px] font-bold">'+libEsc(c)+'</span>'; }
+  function libLevel(l){ return l?'<span class="rounded-md bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-600">'+libEsc(l)+'</span>':''; }
+
+  var _lt;
+  function libToast(msg){ var t=document.getElementById('libToast'); if(!t) return; document.getElementById('libToastMsg').textContent=msg; t.classList.remove('hidden'); t.classList.add('flex'); clearTimeout(_lt); _lt=setTimeout(function(){ t.classList.add('hidden'); t.classList.remove('flex'); },2600); }
+  function libAct(i){ var x=LIB[i]; if(!x) return;
+    if(x.s==='completed') libToast('Opening your certificate for "'+x.t+'"');
+    else if(x.s==='inprogress') libToast('Resuming "'+x.t+'"');
+    else if(x.s==='assigned') libToast('Started "'+x.t+'" — added to My Learning');
+    else libToast('Enrolled in "'+x.t+'" — added to My Learning');
+  }
+  function libNotify(i){ var x=LIB[i]; if(x) libToast('We\'ll let you know when "'+x.t+'" is ready'); }
+
+  // status ribbon (top-right of card)
+  function libRibbon(x){
+    if(x.s==='completed') return '<span class="inline-flex items-center gap-1 rounded-full bg-rag-green-soft px-2.5 py-1 text-[11px] font-bold text-rag-green-strong"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Completed</span>';
+    if(x.s==='inprogress') return '<span class="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-bold text-teachhq-dark">In progress</span>';
+    if(x.s==='assigned') return '<span class="inline-flex items-center gap-1 rounded-full bg-rag-amber-soft px-2.5 py-1 text-[11px] font-bold text-rag-amber-strong"><svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Due '+libEsc(x.due)+'</span>';
+    if(x.s==='soon') return '<span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-500">Coming soon</span>';
+    return '';
+  }
+  function libBtn(label, i){ return '<button type="button" onclick="libAct('+i+')" class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-teachhq px-4 py-2 text-[13px] font-bold text-white shadow-cta transition hover:-translate-y-px hover:bg-teachhq-dark hover:shadow-cta-hover focus:outline-none focus:ring-2 focus:ring-teachhq focus:ring-offset-1 active:translate-y-0">'+label+'</button>'; }
+  function libBtnGhost(label, i){ return '<button type="button" onclick="libAct('+i+')" class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border border-slate-200 bg-white px-4 py-2 text-[13px] font-bold text-slatecard transition hover:-translate-y-px hover:border-slate-300 hover:bg-paper focus:outline-none focus:ring-2 focus:ring-teachhq focus:ring-offset-1">'+label+'</button>'; }
+
+  function libCta(x){
+    if(x.s==='completed') return libBtnGhost('<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.5 12.9 17 22l-5-3-5 3 1.5-9.1"/></svg>Certificate', x._i);
+    if(x.s==='inprogress') return libBtn('Continue', x._i);
+    if(x.s==='assigned') return libBtn('Start now', x._i);
+    if(x.s==='soon') return '<div class="flex items-center gap-2"><button type="button" onclick="libNotify('+x._i+')" class="text-[13px] font-bold text-teachhq transition hover:text-teachhq-dark">Notify me</button><button type="button" disabled class="cursor-not-allowed rounded-xl bg-slate-100 px-4 py-2 text-[13px] font-bold text-slate-400">Coming soon</button></div>';
+    return libBtn('Enrol', x._i);
+  }
+  function libPrice(x){
+    if(x.s==='soon') return '<div class="min-w-0"><div class="text-[13px] font-bold text-slate-400">Free on release</div></div>';
+    var cr = x.cr?('<span class="text-[11px] font-semibold text-slate-400"> or '+x.cr+' credit'+(x.cr>1?'s':'')+'</span>'):'';
+    return '<div class="min-w-0"><div class="text-[15px] font-black leading-none text-slatecard">'+libEsc(x.price)+cr+'</div></div>';
+  }
+
+  function libMeta(x){
+    var h='<span class="inline-flex items-center gap-1"><svg class="h-3.5 w-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'+libFmtDur(x.min)+'</span>';
+    h+='<span class="inline-flex items-center gap-1"><svg class="h-3.5 w-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>CPD certified</span>';
+    if(x.acc) h+='<span class="inline-flex items-center gap-1 font-semibold text-slate-500">'+libEsc(x.acc)+'</span>';
+    return h;
+  }
+
+  function libCard(x){
+    var prog = (x.s==='inprogress')
+      ? '<div class="mt-3.5"><div class="mb-1 flex items-center justify-between text-[11px] font-semibold text-slate-500"><span>Your progress</span><span class="tabular-nums text-teachhq-dark">'+x.p+'%</span></div><div class="h-1.5 overflow-hidden rounded-full bg-slate-100"><i class="block h-full rounded-full bg-teachhq" style="width:'+x.p+'%"></i></div></div>'
+      : '';
+    return '<article class="group relative flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-panel transition hover:-translate-y-px hover:shadow-lift">'
+      + '<div class="flex items-start justify-between gap-2">'
+        + '<div class="flex min-w-0 flex-wrap items-center gap-1.5">'+libPill(x.c)+libLevel(x.lvl)+'</div>'
+        + '<div class="shrink-0">'+libRibbon(x)+'</div>'
+      + '</div>'
+      + '<h3 class="mt-3 text-[15px] font-bold leading-snug text-slatecard">'+libEsc(x.t)+'</h3>'
+      + '<p class="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-slate-500">'+libEsc(x.d)+'</p>'
+      + '<div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-slate-500">'+libMeta(x)+'</div>'
+      + prog
+      + '<div class="mt-4 flex items-center justify-between gap-3 border-t border-slate-100 pt-3.5">'+libPrice(x)+'<div class="shrink-0">'+libCta(x)+'</div></div>'
+    + '</article>';
+  }
+
+  function libContinueCard(x){
+    return '<article class="group relative flex flex-col rounded-xl border border-slate-200 bg-white p-4 shadow-panel transition hover:-translate-y-px hover:shadow-lift">'
+      + '<div class="flex items-center justify-between gap-2">'+libPill(x.c)+'<span class="inline-flex items-center gap-1 text-[12px] text-slate-400"><svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'+libFmtDur(x.min)+'</span></div>'
+      + '<h3 class="mt-2.5 line-clamp-2 min-h-[40px] text-[14px] font-bold leading-snug text-slatecard">'+libEsc(x.t)+'</h3>'
+      + '<div class="mt-2 flex items-center gap-2">'
+        + '<span class="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100"><i class="block h-full rounded-full bg-teachhq" style="width:'+x.p+'%"></i></span>'
+        + '<span class="text-[11px] font-bold tabular-nums text-teachhq-dark">'+x.p+'%</span>'
+      + '</div>'
+      + '<div class="mt-3 flex items-center justify-between"><span class="text-[11.5px] text-slate-400">Resume where you left off</span><button type="button" onclick="libAct('+x._i+')" class="rounded-[13px] bg-teachhq px-3.5 py-1.5 text-[12px] font-bold text-white shadow-cta transition hover:-translate-y-px hover:bg-teachhq-dark hover:shadow-cta-hover">Continue</button></div>'
+    + '</article>';
+  }
+
+  // status counts for the current search filter (ignores category selection)
+  function libBaseMatch(x){
+    if(libState.q){ var q=libState.q; if((x.t+' '+x.c+' '+x.d).toLowerCase().indexOf(q)<0) return false; }
+    return true;
+  }
+  function libRenderCats(){
+    var box=document.getElementById('libCats'); if(!box) return;
+    // counts respect status + search, but not the category chip itself
+    var pool=LIB.filter(function(x){ if(!libBaseMatch(x)) return false; if(libState.status!=='all' && x.s!==libState.status) return false; return true; });
+    function chip(label, val, count){
+      var active=(libState.cat===val);
+      var cls=active
+        ? 'border-teachhq bg-teachhq text-white shadow-cta'
+        : 'border-slate-200 bg-white text-slatecard hover:border-teachhq hover:text-teachhq-dark';
+      var cnt=(count!=null)?'<span class="ml-1.5 rounded-full '+(active?'bg-white/25 text-white':'bg-paper text-slate-500')+' px-1.5 py-0.5 text-[10px] font-bold tabular-nums">'+count+'</span>':'';
+      return '<button type="button" onclick="libSetCat(\''+val+'\')" class="inline-flex items-center rounded-full border px-3 py-1.5 text-[12.5px] font-bold transition '+cls+'">'+libEsc(label)+cnt+'</button>';
+    }
+    var html=chip('All', 'all', pool.length);
+    LIB_CAT_LIST.forEach(function(cat){ var n=pool.filter(function(x){return x.c===cat;}).length; if(n>0 || libState.cat===cat) html+=chip(cat, cat, n); });
+    box.innerHTML=html;
+  }
+
+  function libRender(){
+    var grid=document.getElementById('libGrid'); if(!grid) return;
+    var rows=LIB.filter(function(x){
+      if(!libBaseMatch(x)) return false;
+      if(libState.cat!=='all' && x.c!==libState.cat) return false;
+      if(libState.status!=='all' && x.s!==libState.status) return false;
+      return true;
+    });
+    if(libState.sort==='az') rows.sort(function(a,b){return a.t.localeCompare(b.t);});
+    else if(libState.sort==='short') rows.sort(function(a,b){return a.min-b.min;});
+    else if(libState.sort==='long') rows.sort(function(a,b){return b.min-a.min;});
+    else rows.sort(function(a,b){return (LIB_RANK[a.s]-LIB_RANK[b.s]) || (a._i-b._i);});
+
+    grid.innerHTML=rows.map(libCard).join('');
+    var empty=document.getElementById('libEmpty');
+    if(empty){ empty.classList.toggle('hidden', rows.length>0); empty.classList.toggle('flex', rows.length===0); }
+    grid.classList.toggle('hidden', rows.length===0);
+
+    var cnt=document.getElementById('libCount');
+    if(cnt){
+      var bits=[];
+      if(libState.status!=='all'){ var sl={assigned:'assigned to you',inprogress:'in progress',completed:'completed',available:'not started',soon:'coming soon'}[libState.status]; bits.push(sl); }
+      if(libState.cat!=='all') bits.push('in '+libState.cat);
+      if(libState.q) bits.push('matching "'+libState.q+'"');
+      cnt.innerHTML='Showing <b class="font-bold text-slatecard tabular-nums">'+rows.length+'</b> of '+LIB.length+' courses'+(bits.length?' &middot; '+libEsc(bits.join(' &middot; ')):'');
+    }
+    var clr=document.getElementById('libClear'); if(clr){ var on=(libState.cat!=='all'||libState.status!=='all'||libState.q!==''); clr.classList.toggle('hidden', !on); clr.classList.toggle('inline-flex', on); }
+    libRenderCats();
+  }
+
+  function libRenderContinue(){
+    var box=document.getElementById('libContinue'); if(!box) return;
+    var rows=LIB.filter(function(x){return x.s==='inprogress';});
+    var wrap=document.getElementById('libContinueWrap');
+    if(!rows.length){ if(wrap) wrap.style.display='none'; return; }
+    box.innerHTML=rows.map(libContinueCard).join('');
+  }
+
+  function libSetCat(v){ libState.cat=v; libRender(); }
+  function libSetStatus(v){ libState.status=v; var s=document.getElementById('libStatus'); if(s) s.value=v; libRender(); if(v==='assigned'){ var g=document.getElementById('libGrid'); if(g) g.scrollIntoView({behavior:'smooth',block:'start'}); } }
+  function libSetSort(v){ libState.sort=v; libRender(); }
+  function libOnSearch(v){ libState.q=(v||'').trim().toLowerCase(); libRender(); }
+  function libClear(){ libState.cat='all'; libState.status='all'; libState.q=''; libState.sort='recommended';
+    var s=document.getElementById('libStatus'); if(s) s.value='all';
+    var so=document.getElementById('libSort'); if(so) so.value='recommended';
+    var se=document.getElementById('libSearch'); if(se) se.value='';
+    libRender();
+  }
+
+  // ----- My-workspace view switch (Dashboard <-> Course Library) -----
+  function myNav(view){
+    var dash=document.getElementById('myDash'), lib=document.getElementById('myLibrary');
+    var nl=document.getElementById('navMyLearning'), nc=document.getElementById('navCourseLibrary');
+    if(!dash||!lib) return;
+    if(view==='library'){
+      dash.style.display='none'; lib.style.display='';
+      if(nl){ nl.classList.remove('rail-active'); nl.removeAttribute('aria-current'); }
+      if(nc){ nc.classList.add('rail-active'); nc.setAttribute('aria-current','page'); }
+      libRender();
+    } else {
+      lib.style.display='none'; dash.style.display='';
+      if(nc){ nc.classList.remove('rail-active'); nc.removeAttribute('aria-current'); }
+      if(nl){ nl.classList.add('rail-active'); nl.setAttribute('aria-current','page'); }
+    }
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  // Jump straight to the library from anywhere (promo strip, other workspaces)
+  function goLibrary(){ if(typeof switchWorkspace==='function') switchWorkspace('my'); myNav('library'); }
+
+  function libInit(){
+    LIB.forEach(function(x,i){ x._i=i; });
+    var a=document.getElementById('libAssignedCount'); if(a) a.textContent=LIB.filter(function(x){return x.s==='assigned';}).length;
+    var b=document.getElementById('libAssignedBanner'); if(b && !LIB.some(function(x){return x.s==='assigned';})) b.style.display='none';
+    libRenderContinue();
+    libRender();
+  }
+
   // init
   switchWorkspace('my');
   setScope('trust');
   mxInit();
   mxvInit();
+  libInit();
 </script>
   <!-- ===================== NOTIFICATIONS DRAWER (Beamer-style UX) ===================== -->
   <div id="notifOverlay" onclick="closeNotifications()" class="fixed inset-0 z-[70] bg-slate-900/40 backdrop-blur-[2px] opacity-0 pointer-events-none transition-opacity duration-[480ms] ease-out"></div>
