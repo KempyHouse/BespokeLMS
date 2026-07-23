@@ -24,11 +24,6 @@ alter table courses
   add column hero_image_alt         text,
   add column trailer_video_path     text,               -- uploaded to Storage
   add column trailer_url            text,               -- external (Vimeo/YouTube)
-  add column description_short      text,               -- mobile
-  add column aims                   text,
-  add column aims_short             text,
-  add column objectives             text,
-  add column objectives_short       text,
   add column cpd_points             numeric,
   add column cpd_body               text,
   add column meta_title             text,
@@ -38,10 +33,22 @@ alter table courses
   add column certificate_validity   interval,           -- null = never expires
   add column auto_reassign_on_expiry boolean not null default false;
 
--- ============ COURSE_VERSIONS: content / assessment fields =================
+-- ============ COURSE_VERSIONS: content / assessment / staged copy =========
+-- The descriptive selling copy (description/aims/objectives + mobile-short
+-- variants) lives on the VERSION, so a learner/browser never sees an author's
+-- in-progress edits: edits happen on a draft version and only surface when it
+-- is published (courses.description from 001 remains the base/fallback that the
+-- catalogue COALESCEs with the current published version's copy). Hero/trailer/
+-- SEO/commercial stay on `courses` as the always-live shop-window.
 alter table course_versions
   add column assessment_placement assessment_placement not null default 'end_of_course',
-  add column pass_mark_pct        int check (pass_mark_pct between 0 and 100);
+  add column pass_mark_pct        int check (pass_mark_pct between 0 and 100),
+  add column description          text,               -- versioned long description (else course.description)
+  add column description_short    text,               -- mobile
+  add column aims                 text,
+  add column aims_short           text,
+  add column objectives           text,
+  add column objectives_short     text;
 
 -- ===================== PRICING + RETAKE / RETRY POLICY =====================
 -- Retry/retake nullability convention:
