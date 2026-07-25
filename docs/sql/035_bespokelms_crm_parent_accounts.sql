@@ -1,0 +1,24 @@
+-- 035: Parent-company links between CRM accounts (APPLIED to Supabase as
+-- migration `bespokelms_crm_parent_accounts_035` — this file is a summary;
+-- the migration history is the source of truth).
+--
+-- What it adds
+--   crm_accounts.parent_account_id uuid
+--     · composite FK (parent_account_id, owning_organization_id)
+--       → crm_accounts (id, owning_organization_id): a parent in another
+--       owning organisation is UNREPRESENTABLE (org-exact isolation holds).
+--     · ON DELETE SET NULL (parent_account_id) — column-list form (PG15+),
+--       so deleting a parent clears only the link, never the owning org.
+--   CHECK crm_accounts_parent_not_self — an account cannot be its own parent.
+--   Trigger crm_accounts_parent_cycle (BEFORE INSERT/UPDATE OF
+--   parent_account_id) — walks the ancestor chain (≤50 hops, SECURITY
+--   DEFINER, search_path=public) and raises check_violation on any cycle.
+--   Partial index crm_accounts_parent_idx on parent_account_id.
+--
+-- Proven live (rolled back): valid same-org link OK; self-parent and
+-- two-node cycle both rejected with check_violation.
+--
+-- App layer (commit a45c291): parent select on the account form (excludes
+-- self + descendants), parent link + subsidiaries list on the account page;
+-- reads resolved as two explicit scoped queries (PostgREST self-join embeds
+-- are direction-ambiguous on a self-FK).
