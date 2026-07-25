@@ -1,0 +1,30 @@
+-- 038 + 038b (APPLIED to Supabase — summary; migration history is truth).
+--
+-- `bespokelms_crm_pipelines_deals_038` — Phase 3: Opportunities
+--   crm_pipelines (per owning org; one is_default via partial unique)
+--   crm_pipeline_stages (key/label/sort; colour_bg_token/colour_text_token
+--     are design-token KEYS mirroring board_stages; is_won XOR is_lost)
+--   crm_deals (account/pipeline/stage via COMPOSITE FKs inside the owning
+--     org; value_minor bigint + currency char(3) default GBP — GBP-first,
+--     multi-currency needs no rework; probability 0-100; won_at/lost_at/
+--     lost_reason; archived_at soft delete)
+--   crm_deal_contacts (deal↔contact junction, unique pair)
+--   crm_activities.deal_id + crm_documents.deal_id — composite FKs with
+--     column-list ON DELETE SET NULL (deal_id); documents anchor CHECK
+--     extended to account OR contact OR deal.
+--   RLS: crm_org_access(owning_organization_id) FOR ALL on all four tables.
+--   Trigger crm_deals_stage_stamp (BEFORE): entering a won stage stamps
+--     won_at & clears lost; lost stamps lost_at; open stages clear both.
+--   Trigger crm_deals_stage_log (AFTER, stage changed): system activity
+--     ("Deal stage: X") anchored to BOTH the deal and its account.
+--   Seed: default pipeline Enquiry(10)/Qualified(20)/Demo(30)/Proposal(40)/
+--     Negotiation(50)/Won(90, rag-green tokens)/Lost(95, rag-red tokens)
+--     for every org with sales_crm enabled; the app self-provisions the
+--     same set for orgs that enable the CRM later.
+--
+-- `bespokelms_crm_deal_stage_log_fix_038b` — the stage logger's source
+--   value: crm_record_source has no 'system'; machine rows use 'sync'.
+--
+-- Proven live (rolled back): won stamp set + cleared on reopen, stage-move
+-- system activity double-anchored, random/foreign stage id rejected by the
+-- composite FK.
