@@ -1,0 +1,28 @@
+-- 039 + 040 (APPLIED to Supabase — summary; migration history is truth).
+--
+-- 039 `bespokelms_nav_override_org_currency_039`
+--   route_registry.status_override (nav_route_status, null) — the owner's
+--   "no longer coming soon" toggle. Code sync owns `status`; the override
+--   wins at resolution and survives every sync. Opportunities
+--   (ops.crm.deals) taken live via the override; its default_icon becomes
+--   the __CURRENCY_GLYPH__ marker.
+--   organizations.currency char(3) not null default 'GBP' — trading
+--   currency per organisation (Vetstream US → USD later); drives the
+--   locale-aware Opportunities glyph (£/$/€) via CurrencyGlyph.
+--
+-- 040 `bespokelms_crm_account_brands_040` — per-brand relationships
+--   crm_account_brands (owning org; account composite FK; brand_organization_id
+--   → organizations; stage crm_lifecycle_stage default lead; notes;
+--   UNIQUE (account_id, brand_organization_id)). RLS crm_org_access ALL.
+--   Guard trigger: brands must be platform/operator organisations.
+--   crm_apply_account_brand (AFTER link): operator/platform link → customer
+--   row for the book's own brand; CLIENT link → customer row for the
+--   nearest OPERATOR ancestor ("Customer via Turner Price"). Backfilled
+--   for existing links (March Foods + Turner Price Limited → BespokeLMS).
+--   Proven with a simulated BWCET client trust under Turner Price:
+--   auto "via TP" customer row, coexisting TeachHQ lead row, client-as-
+--   brand rejected — all asserts passed, rolled back.
+--
+-- App (commit 4eab9d2): Brand relationships card + Serviced-by chip on
+-- accounts; Brand prospects section on Leads/Prospects; owner-gated
+-- add/remove endpoints.
