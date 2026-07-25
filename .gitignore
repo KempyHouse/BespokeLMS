@@ -1,3 +1,7 @@
 .DS_Store
 Thumbs.db
 ~$*
+
+# Session scratch folders (lock-file graveyard + staging copies) — safe for Andrew to delete
+_to_delete/
+_freshstage/
