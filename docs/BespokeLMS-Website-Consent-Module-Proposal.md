@@ -1,7 +1,7 @@
 # BespokeLMS — Website & Consent Module: Analysis & Implementation Plan
 
 **Date:** 25 July 2026 · **Status:** Proposal for review — nothing applied
-**Scope:** Turning "Website & Consent" into the platform's CMS and Consent Management Platform (CMP): multi-surface hosting on custom/vanity domains, a block-based page builder, site menus, web forms wired into the Sales CRM, a Cookiebot-class consent engine with its own scanner, and the support portal + live-chat relocation. Written against the **live** Supabase project `pqmdtqsscyltykgcwwus` (94 public tables + 5 views, migrations through `..._crm_followups_043`) and the `bespokelms-app` Laravel codebase at commit `8a5879f`.
+**Scope:** Turning "Website & Consent" into the platform's CMS and Consent Management Platform (CMP): multi-surface hosting on custom/vanity domains, a block-based page builder, site menus, web forms wired into the Sales CRM, a full consent management engine with its own scanner, and the support portal + live-chat relocation. Written against the **live** Supabase project `pqmdtqsscyltykgcwwus` (94 public tables + 5 views, migrations through `..._crm_followups_043`) and the `bespokelms-app` Laravel codebase at commit `8a5879f`.
 
 **First asset:** the BespokeLMS marketing site itself — `www.bespokelms.com` as the window onto `app.bespokelms.com`, with `support.bespokelms.com` following.
 
@@ -135,7 +135,7 @@ Moves: `ops.support-portal` → Website & Consent (as a site). `ops.live-chat` �
 
 ### C1. "Website & Consent" is two products. Name them, phase them, but keep them in one module.
 
-A CMS and a CMP are separable products with different buyers. Bundling them is right for you — the CMS is precisely what makes your CMP better than Cookiebot (§7.4) — but the module must be internally honest about the seam: separate module keys (`website_cms`, `consent`), separate capabilities, separate enablement per tenant. A tenant should be able to buy consent without buying the site builder (they have a WordPress site and want your banner on it), and vice versa. **Recommendation:** two module keys under one menu group, and design the consent engine so its script can be embedded on **any** site, not only sites you host.
+A CMS and a CMP are separable products with different buyers. Bundling them is right for you — the CMS is precisely what makes your CMP stronger than any runtime-only engine (§7.4) — but the module must be internally honest about the seam: separate module keys (`website_cms`, `consent`), separate capabilities, separate enablement per tenant. A tenant should be able to buy consent without buying the site builder (they have a WordPress site and want your banner on it), and vice versa. **Recommendation:** two module keys under one menu group, and design the consent engine so its script can be embedded on **any** site, not only sites you host.
 
 ### C2. Public pages break the platform's core security assumption. Design for that explicitly.
 
@@ -155,7 +155,7 @@ The project instructions forbid mock/sample content. A marketing site is where f
 
 ### C5. Build the CMP; don't resell one. But know exactly why. **[CONFIRMED — no third-party API]**
 
-The research (§7) is unambiguous on the deciding factor: **no vendor in this market sells per-client custom consent domains *and* per-client dashboard branding.** Cookiebot has no provisioning API at all, no RBAC, and treats logo removal as a documented CSS hack. Didomi is the only vendor with a complete `POST /organizations` → notice → `POST /domains` (auto-SSL) chain, and would get you six months earlier if you decided to buy. Since white-label per-tenant identity is the entire premise of BespokeLMS, **build** — and treat the four Cookiebot gaps (provisioning API, RBAC, branding toggle, per-domain billing with a 4× tier cliff) as the product brief. **Decision taken 25 July 2026: recreate the functionality in-house. No Cookiebot API, no Didomi, no reseller arrangement — the vendor comparison below is retained only as a feature checklist to build against.**
+The research (§7) is unambiguous on the deciding factor: **no vendor in this market sells per-client custom consent domains *and* per-client dashboard branding.** The self-serve incumbents have no provisioning API at all, no RBAC, and treat logo removal as a documented CSS hack. Exactly one enterprise vendor has a complete `POST /organizations` → notice → `POST /domains` (auto-SSL) chain, and would have got you six months earlier if you had decided to buy. Since white-label per-tenant identity is the entire premise of BespokeLMS, **build** — and treat the four gaps (provisioning API, RBAC, branding toggle, per-domain billing with a 4× tier cliff) as the product brief. **Decision taken 25 July 2026: recreate the functionality in-house. No third-party CMP API and no reseller arrangement — the comparison below is retained only as an anonymised feature checklist to build against, and no competitor is named anywhere in the product, the code or anything customer-facing.**
 
 ### C6. Skip IAB TCF. Say so in writing, once.
 
@@ -167,7 +167,7 @@ For Turner Price's website visitors, Turner Price is the controller and BespokeL
 
 ### C8. Prior blocking is the compliance core, and it is where you beat the market — because you own the CMS.
 
-Every runtime CMP intercepts scripts in the browser: Cookiebot rewrites `type="text/javascript"` → `text/plain`, which requires being the **first, synchronous script in `<head>`** (at war with Core Web Vitals), fails open when it doesn't load, and gates entire bundles behind marketing consent. **You render the page.** Third-party embeds can be gated *at render time*, server-side, from the visitor's consent cookie — no request is ever made. That structurally beats every runtime approach and no other vendor can do it for arbitrary customer sites. Design the block registry so that **every block declares the consent purpose it requires**, and the renderer emits either the embed or a token-styled placeholder with a "load this content" affordance.
+Every runtime CMP intercepts scripts in the browser: the usual technique rewrites `type="text/javascript"` → `text/plain`, which requires being the **first, synchronous script in `<head>`** (at war with Core Web Vitals), fails open when it doesn't load, and gates entire bundles behind marketing consent. **You render the page.** Third-party embeds can be gated *at render time*, server-side, from the visitor's consent cookie — no request is ever made. That structurally beats every runtime approach and no other vendor can do it for arbitrary customer sites. Design the block registry so that **every block declares the consent purpose it requires**, and the renderer emits either the embed or a token-styled placeholder with a "load this content" affordance.
 
 ⚠️ **The unblocking gotcha to encode in the client runtime:** setting `el.type = 'text/javascript'` in place does **not** execute a blocked script — the HTML spec only "prepares" a script element on insertion, on `src` being set while connected, or on children changing. The unblocker must clone attributes onto a fresh `<script>` and re-insert. Same for `<img data-src>` / `<iframe data-src>`: leave `src` unset entirely.
 
@@ -182,11 +182,11 @@ You asked what to do about storing cookie preferences when the visitor isn't a k
 - Every visitor gets a `consent_id` — a random pseudonymous UUID stored in a first-party, strictly-necessary cookie. All consent records key on it.
 - When the visitor becomes identified — submits a form, clicks a tracked link, signs into the LMS — the `consent_id` is attached to the `crm_contacts` row (`consent_id` column) and, from that moment, their consent history is visible on the CRM timeline. Historic records are stitched by `consent_id`, not copied.
 - Marketing consent captured **on a form** is a different legal object from cookie consent and gets its own purpose and record. Keep them separate rows in one ledger, distinguished by `collection_method` and `purpose`.
-- **Minimise.** Store a derived `country` and discard the IP, or truncate/salted-hash it. Full IP collected solely to prove consent is the classic over-collection trap and it is what got Cookiebot enjoined in Germany (VG Wiesbaden, 2021 — later overturned on procedural grounds only, so treat it as unresolved rather than settled).
+- **Minimise.** Store a derived `country` and discard the IP, or truncate/salted-hash it. Full IP collected solely to prove consent is the classic over-collection trap and it is what got a major CMP enjoined in Germany (VG Wiesbaden, 2021 — later overturned on procedural grounds only, so treat it as unresolved rather than settled).
 
 ### C11. Set stricter defaults than the market, deliberately.
 
-6-month consent lifetime, **symmetric for accept and reject**, with immediate re-prompt when the banner config or vendor list changes. That aligns with both CNIL's consolidated recommendation and the ICO's April 2026 guidance, and it is stricter than the 90-day and 12-month defaults competitors ship. Proof retention runs on a different clock: processing duration **plus the limitation period** (6 years in the UK), held in your own Supabase store — not the 12 months Cookiebot erases at. Three clocks, never conflated: consent lifetime, tracker lifetime, proof retention.
+6-month consent lifetime, **symmetric for accept and reject**, with immediate re-prompt when the banner config or vendor list changes. That aligns with both CNIL's consolidated recommendation and the ICO's April 2026 guidance, and it is stricter than the 90-day and 12-month defaults competitors ship. Proof retention runs on a different clock: processing duration **plus the limitation period** (6 years in the UK), held in your own Supabase store — not the 12 months the self-serve tools erase at. Three clocks, never conflated: consent lifetime, tracker lifetime, proof retention.
 
 ---
 
@@ -478,7 +478,7 @@ New public storage bucket `web-media`, org-prefixed paths (`{org_id}/{site_id}/�
 
 ## 6. Consent — the CMP
 
-> **Superseded and expanded.** This section is now the summary only. The full engineering spec is `BespokeLMS-Consent-CMP-Build-Spec.md`, written after two scope decisions were taken: the consent engine **must run on tenants' external sites as well as CMS-hosted ones** (an embeddable script, full Cookiebot parity), and **geo rulesets and multi-language are in v1**. Migration family **050–056**; phases C1–C7.
+> **Superseded and expanded.** This section is now the summary only. The full engineering spec is `BespokeLMS-Consent-CMP-Build-Spec.md`, written after two scope decisions were taken: the consent engine **must run on tenants' external sites as well as CMS-hosted ones** (an embeddable script, full parity with the incumbents), and **geo rulesets and multi-language are in v1**. Migration family **050–056**; phases C1–C7.
 
 ### 6.1 Purposes, vendors, cookies
 
@@ -618,7 +618,7 @@ create table tenant_cookie_overrides (organization_id, name_pattern, domain_patt
 ```
 
 - `cookie_classifications` is **global, not per-tenant** — the only table in the module without an org column, and the one that compounds in value across every tenant scan. It is the product.
-- Bootstrap it from permissively-licensed sources only: **Open Cookie Database** (Apache-2.0, ~2,264 cookies, ships an EDPB-format export), **badger-sett** (MIT), **Brave adblock-lists** (MPL-2.0), **EasyPrivacy** (take the CC BY-SA branch), and the **CookieBlock Zenodo corpus** (CC-BY-4.0, 304k labelled cookies — commercial retraining permitted with attribution). ⚠️ **Explicitly excluded:** DuckDuckGo Tracker Radar, Disconnect, Ghostery trackerdb (all CC BY-**NC**-SA) and cookiedatabase.org (CC BY-NC-**ND**, and API-gated since 1 June 2026). Cookiepedia is OneTrust's and is off-limits. Record these licence decisions in the repo — this is the kind of thing that surfaces during due diligence.
+- Bootstrap it from permissively-licensed sources only: **Open Cookie Database** (Apache-2.0, ~2,264 cookies, ships an EDPB-format export), **badger-sett** (MIT), **Brave adblock-lists** (MPL-2.0), **EasyPrivacy** (take the CC BY-SA branch), and the **CookieBlock Zenodo corpus** (CC-BY-4.0, 304k labelled cookies — commercial retraining permitted with attribution). ⚠️ **Explicitly excluded:** DuckDuckGo Tracker Radar, Disconnect, Ghostery trackerdb (all CC BY-**NC**-SA) and cookiedatabase.org (CC BY-NC-**ND**, and API-gated since 1 June 2026). Cookiepedia is vendor-proprietary and is off-limits. Record these licence decisions in the repo — this is the kind of thing that surfaces during due diligence.
 - The unknown tail is classified by LLM (the AI integration layer already exists: `ai_integrations`, `ai_usage_logs`) and cached globally with a confidence score and evidence.
 - **Multi-scenario is what makes the report worth paying for:** load with no interaction, with reject-all, and with accept-all. The headline findings from the literature — 82.5% of sites have undeclared cookies, 69.7% set non-necessary cookies before any interaction, **21.3% set cookies despite rejection** — are only detectable this way, and they are exactly the violations a tenant will pay to be told about.
 - **Diff against the previous scan and alert on new cookies.** "Your marketing team added Hotjar last Tuesday and it's firing before consent" is the renewal feature.
@@ -628,34 +628,34 @@ create table tenant_cookie_overrides (organization_id, name_pattern, domain_patt
 
 ## 7. Market position — what we're building against
 
-Condensed from a full competitive study; the detail sits behind this summary.
+Condensed from a full competitive study. **Vendors are described by archetype, not by name:** no competitor is named in this repository, the codebase, the product or anything customer-facing. The named study is held separately.
 
-### 7.1 Cookiebot in one paragraph
+### 7.1 The self-serve incumbent in one paragraph
 
-Cookiebot (Cybot, merged into Usercentrics 2021) is the SMB self-serve line: monthly domain scanning (daily is a €99/month add-on), an auto-updating declaration table, a Swift banner with Premium-gated custom colours, a 12-month consent log downloadable only as CSV, Google Consent Mode v2 on every tier, TCF v2.3, `data-blockingmode="auto"`, geo-targeting via domain groups, ~46 template languages. **$8–$96 per domain per month**, every domain and subdomain billed separately with no volume discount and a documented 4× cliff between tiers. Reseller terms: 40% for three years then 20% (retail), or 20% wholesale.
+The market-leading SMB self-serve line is: monthly domain scanning (daily is a €99/month add-on), an auto-updating declaration table, a Swift banner with Premium-gated custom colours, a 12-month consent log downloadable only as CSV, Google Consent Mode v2 on every tier, TCF v2.3, `data-blockingmode="auto"`, geo-targeting via domain groups, ~46 template languages. **$8–$96 per domain per month**, every domain and subdomain billed separately with no volume discount and a documented 4× cliff between tiers. Reseller terms: 40% for three years then 20% (retail), or 20% wholesale.
 
 ### 7.2 The four gaps that are the product brief
 
-1. **No provisioning API.** Verified across the developer page, the API support section (two read-only endpoints, static key in the URL path), the domain-groups docs and the entire ~40-article Reseller Program category. Onboarding is by invite link, one customer at a time. An agency cannot create a Cookiebot tenant from code.
-2. **No RBAC, no team accounts.** Credential sharing is the documented workaround. Three separate logins (`admin.` / `manage.` / Usercentrics Admin) is a live merger artefact.
-3. **Branding removal is a CSS hack** — Cookiebot publishes an article telling you to `display:none` its own logo elements. A per-tenant toggle is a trivial differentiator.
-4. **Auto-blocking is fragile.** Must be the first synchronous script in `<head>`; bundles are all-or-nothing (a `bundle.js` needing marketing consent gates your whole app); `document.write` unsupported; fails open. Cookiebot's own remedy is "switch to manual blocking".
+1. **No provisioning API.** Verified across the developer page, the API support section (two read-only endpoints, static key in the URL path), the domain-groups docs and the entire ~40-article Reseller Program category. Onboarding is by invite link, one customer at a time. An agency cannot create a tenant from code.
+2. **No RBAC, no team accounts.** Credential sharing is the documented workaround. Three separate logins across two admin domains is a live merger artefact.
+3. **Branding removal is a CSS hack** — the vendor publishes an article telling you to `display:none` its own logo elements. A per-tenant toggle is a trivial differentiator.
+4. **Auto-blocking is fragile.** Must be the first synchronous script in `<head>`; bundles are all-or-nothing (a `bundle.js` needing marketing consent gates your whole app); `document.write` unsupported; fails open. The vendor's own remedy is "switch to manual blocking".
 
 ### 7.3 Competitors, filtered to what matters here
 
 | Product | Sub-accounts | White-label **dashboard** | Provisioning API | Published reseller margin |
 |---|---|---|---|---|
-| **Didomi** | Yes (`POST /organizations`) | No (banner + custom domain) | **Yes — full chain incl. per-client domain with auto-SSL** | 20% recurring / 3 yrs |
-| **consentmanager.net** | Yes | **Yes — incl. admin area via reverse proxy** | Yes | Not published |
-| **Clym** | **Yes — Instance→Merchant→Domain→Subdomain→Property** | Partial (DSAR admin explicitly not) | **Yes — richest; 200 merchants/request** | Not published |
-| **Cookie Script** | Yes | **Yes — own domain via CNAME, logo, colours, emails** | Yes | None ("same prices") |
-| **Usercentrics / Cookiebot** | Corporate only | Claimed via a non-public Partner API | Partner API, docs gated | 40%/3yr then 20% |
-| **Termly** | Yes | No | Yes (`POST /v1/websites`, bulk) | from 50% off retail |
-| **CookieYes** | Agency platform | No | **No** | Agency up to 50% off |
-| **iubenda** | **No client logins** (own docs: "in progress") | No | Policies only | 5–10% |
-| **Osano / OneTrust / TrustArc / Ketch** | Varies | No / unverified | Configs yes, tenants no | Nothing published |
+| **Enterprise, API-first** | Yes (`POST /organizations`) | No (banner + custom domain) | **Yes — full chain incl. per-client domain with auto-SSL** | 20% recurring / 3 yrs |
+| **Mid-market, proxy-branded** | Yes | **Yes — incl. admin area via reverse proxy** | Yes | Not published |
+| **Agency-tiered (best data model)** | **Yes — Instance→Merchant→Domain→Subdomain→Property** | Partial (DSAR admin explicitly not) | **Yes — richest; 200 merchants/request** | Not published |
+| **Budget, CNAME white-label (best packaging)** | Yes | **Yes — own domain via CNAME, logo, colours, emails** | Yes | None ("same prices") |
+| **Self-serve, scanner-led** | Corporate only | Claimed via a non-public Partner API | Partner API, docs gated | 40%/3yr then 20% |
+| **SMB policy-generator** | Yes | No | Yes (`POST /v1/websites`, bulk) | from 50% off retail |
+| **Agency-plan, no API** | Agency platform | No | **No** | Agency up to 50% off |
+| **Compliance-docs led** | **No client logins** (own docs: "in progress") | No | Policies only | 5–10% |
+| **Privacy-suite incumbents** | Varies | No / unverified | Configs yes, tenants no | Nothing published |
 
-Be sceptical of "white-label" in this market: for most vendors it means removing a logo from a banner. **Clym's data model is the one to lift** (it maps onto Laravel tenancy and Supabase RLS almost directly). **Cookie Script's packaging is the one to copy** — base plan + per-domain increment + a flat annual white-label add-on tied to a CNAME, the only model that charges separately for the genuinely expensive thing.
+Be sceptical of "white-label" in this market: for most vendors it means removing a logo from a banner. **The agency-tiered data model is the one to lift** (Instance → Merchant → Domain → Subdomain → Property maps onto Laravel tenancy and Supabase RLS almost directly). **The budget CNAME packaging is the one to copy** — base plan + per-domain increment + a flat annual white-label add-on tied to a CNAME, the only model that charges separately for the genuinely expensive thing.
 
 ### 7.4 Where BespokeLMS wins
 

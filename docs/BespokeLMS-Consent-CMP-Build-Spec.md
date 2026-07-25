@@ -5,7 +5,7 @@
 
 **Decisions taken:**
 
-1. **Build, not integrate.** No Cookiebot API, no Didomi, no reseller arrangement. The CMP is BespokeLMS code running on BespokeLMS infrastructure against the BespokeLMS Supabase project.
+1. **Build, not integrate.** No third-party CMP API and no reseller arrangement. The CMP is BespokeLMS code running on BespokeLMS infrastructure against the BespokeLMS Supabase project.
 2. **Runs anywhere.** A one-line embeddable script that works on any website — a tenant's existing WordPress, Shopify, Webflow or bespoke site — **plus** server-side render-time blocking on sites we host in the CMS. Two blocking paths, one config, one ledger.
 3. **Full parity, including geo rulesets and multi-language.**
 
@@ -25,10 +25,10 @@ That third decision is what turns this from a feature into a product: a tenant w
 
 **The four things that beat the incumbent**, and which must survive every scoping conversation:
 
-1. **A provisioning API.** Cookiebot has none — onboarding is an invite email, one customer at a time. Ours creates a site, publishes a banner and attaches a domain from code, because tenants already exist as rows in `organizations`.
-2. **Real RBAC.** Cookiebot has no team accounts at all; credential sharing is the documented workaround. We have Supabase RLS and `profile_capabilities` already.
-3. **Per-tenant branding as a toggle**, not a CSS hack. Cookiebot publishes an article telling you to `display:none` its own logo.
-4. **Host-based blocking rules instead of file-based.** Cookiebot gates whole JS bundles behind marketing consent — if `bundle.js` sets one marketing cookie, the entire application waits for consent. §4.4 fixes this properly.
+1. **A provisioning API.** The self-serve incumbents have none — onboarding is an invite email, one customer at a time. Ours creates a site, publishes a banner and attaches a domain from code, because tenants already exist as rows in `organizations`.
+2. **Real RBAC.** The incumbents have no team accounts at all; credential sharing is the documented workaround. We have Supabase RLS and `profile_capabilities` already.
+3. **Per-tenant branding as a toggle**, not a CSS hack. The incumbents publish articles telling you to `display:none` their own logo.
+4. **Host-based blocking rules instead of file-based.** File-based blocking gates whole JS bundles behind marketing consent — if `bundle.js` sets one marketing cookie, the entire application waits for consent. §4.4 fixes this properly.
 
 ---
 
@@ -71,7 +71,7 @@ That third decision is what turns this from a feature into a product: a tenant w
 
 Three properties fall out of this shape and each is a deliberate improvement on the incumbent:
 
-- **Nothing on the visitor hot path touches Postgres.** Config is a static, immutable, CDN-cached JSON document. Cookiebot does the same; the difference is we can publish per-tenant to a per-tenant domain.
+- **Nothing on the visitor hot path touches Postgres.** Config is a static, immutable, CDN-cached JSON document. That is the standard approach; the difference is we can publish per-tenant to a per-tenant domain.
 - **The write path is the only public database endpoint**, so it gets all the hardening attention (§9).
 - **The scanner never runs in the web tier.** Headless Chromium cannot run on Laravel Cloud or in a Supabase Edge Function; it is a separate worker with its own queue.
 
@@ -147,12 +147,12 @@ Published on every banner publish. Immutable, content-addressed, versioned.
 }
 ```
 
-**Why the string bundles are separate:** parity requires ~16+ languages at launch and Cookiebot ships 46. Inlining them all would put ~100KB of dead weight on every page load. One locale file, lazily fetched only after the banner decides it needs to render, keeps the loader small.
+**Why the string bundles are separate:** parity requires ~16+ languages at launch, and the market benchmark is around 46. Inlining them all would put ~100KB of dead weight on every page load. One locale file, lazily fetched only after the banner decides it needs to render, keeps the loader small.
 
 ### 3.2 Domains, keys and the custom consent domain
 
 - `consent.bespokelms.com` is the platform default host for the script, config and write API.
-- A tenant on the white-label add-on gets `consent.theirdomain.com` (CNAME → our ingress, automatic certificate). **This is the single most valuable commercial feature in the module** — Didomi does it per domain, consentmanager allows one per *account*, Sourcepoint's is account-branded, Piwik PRO is one per instance. Nobody does it per client the way this design does.
+- A tenant on the white-label add-on gets `consent.theirdomain.com` (CNAME → our ingress, automatic certificate). **This is the single most valuable commercial feature in the module.** Across the market the best on offer is one custom consent domain per *account*, or one per instance, or an account-branded host. Nobody does it per client the way this design does.
 - The **site key** (`bl_…`) is public and appears in HTML. It is not a secret and grants nothing except reading a published config and writing a consent record from a verified origin.
 - Every domain that may embed the script must be listed on the site and DNS-verified. The config endpoint and the write API both enforce origin against that list (§9.1).
 
@@ -171,14 +171,14 @@ Published on every banner publish. Immutable, content-addressed, versioned.
 
 ## 4. The client runtime
 
-Two artefacts, deliberately split — this is where Cookiebot's architecture hurts most and where we do better.
+Two artefacts, deliberately split — this is where the single-script architecture hurts most and where we do better.
 
 | | Size budget (gzipped) | Loading | Job |
 |---|---|---|---|
 | **Loader + blocking engine** | **≤ 9 KB** | Synchronous, first in `<head>` (auto mode) | Patch the DOM/network surface, read the consent cookie, apply Consent Mode defaults, decide whether UI is needed |
 | **UI bundle** | ≤ 28 KB | Async, only when a banner or preference centre must render | Banner, preference centre, declaration table, focus management, animations |
 
-Cookiebot ships one script that must be synchronous, first in `<head>`, and carries the whole UI — which is why its own documentation offers "switch to manual blocking" as the remedy for render delay. Splitting means the *blocking* is synchronous (it must be) while the *UI* is not (it needn't be).
+The incumbent design ships one script that must be synchronous, first in `<head>`, and carries the whole UI — which is why the documented remedy for render delay is "switch to manual blocking" as the remedy for render delay. Splitting means the *blocking* is synchronous (it must be) while the *UI* is not (it needn't be).
 
 ### 4.1 Boot sequence
 
@@ -217,9 +217,9 @@ Everything below is required. Anything missing is a leak, and the leak is the pr
 
 Setting `el.type = 'text/javascript'` on a blocked script **does not execute it.** The HTML specification only "prepares" a script element on insertion, on `src` being set while connected, or on children changing — never on a `type` mutation. The unblocker must **clone every attribute onto a fresh `<script>` element and insert that**, preserving document order for non-async scripts. Getting this wrong produces a CMP that appears to work in testing and silently never fires anyone's analytics in production.
 
-### 4.4 Host-based rules, not file-based — the Cookiebot bug we don't inherit
+### 4.4 Host-based rules, not file-based — the bug we don't inherit
 
-Cookiebot derives a per-domain checklist of "consent checksums, files, paths and keyword matchings" and blocks *files*. Its own documentation concedes the consequence: *"if you have a file bundle.js that requires consent for necessary, statistical, and marketing cookies, then this file will only be allowed to load if a visitor accepts statistical and marketing cookies."* On any bundler-based site that gates the entire application behind marketing consent.
+File-based engines derive a per-domain checklist of consent checksums, files, paths and keyword matches, and block *files*. The consequence is conceded in their own documentation: *"if you have a file bundle.js that requires consent for necessary, statistical, and marketing cookies, then this file will only be allowed to load if a visitor accepts statistical and marketing cookies."* On any bundler-based site that gates the entire application behind marketing consent.
 
 Our rules key on **destination host** for network interception, plus **explicit attributes** for first-party code:
 
@@ -243,9 +243,9 @@ The advantage is structural rather than marginal: no `<head>` ordering constrain
 
 ### 4.6 Fail-closed by default, and say so
 
-If the config cannot be fetched, `mode: auto` keeps everything non-necessary blocked. Cookiebot's auto mode fails open — its documentation notes that manual mode "works even if the Cookiebot script fails to load," which is a concession. Fail-closed is the correct default for a compliance product; make it configurable per site, log every fail-closed page view, and alert the tenant if the rate crosses a threshold, because a fail-closed CMP with a CDN problem looks like a broken website.
+If the config cannot be fetched, `mode: auto` keeps everything non-necessary blocked. The incumbent auto modes fail open, and the tell is documentation recommending manual mode because it "works even if the script fails to load" — which is a concession. Fail-closed is the correct default for a compliance product; make it configurable per site, log every fail-closed page view, and alert the tenant if the rate crosses a threshold, because a fail-closed CMP with a CDN problem looks like a broken website.
 
-### 4.7 Public JS API — parity, plus a Cookiebot migration shim
+### 4.7 Public JS API — parity, plus a legacy-CMP migration shim
 
 ```js
 BespokeConsent.consent            // {necessary, functional, analytics, marketing, personalisation}
@@ -263,7 +263,7 @@ BespokeConsent.runScripts()                 // manual unblock trigger
 
 Events on `window`: `blConsentLoad`, `blConsentReady`, `blConsentAccept`, `blConsentDecline`, `blConsentChange`, `blConsentDialogDisplay`, `blConsentTagsExecuted`. Also pushed to `dataLayer` for GTM triggers.
 
-**Migration shim (opt-in, `data-compat="cookiebot"`).** Aliases `window.Cookiebot.consent.{necessary,preferences,statistics,marketing}`, `.hasResponse`, `.renew()`, `.withdraw()`, and re-emits `CookiebotOnAccept` / `OnDecline` / `OnLoad` / `OnConsentReady` / `OnTagsExecuted`; maps `data-cookieconsent="statistics"` attributes to our purposes. A tenant switching from Cookiebot changes one script tag and nothing else. **This is a sales weapon and it costs about a day of work** — build it in Phase C3, not "later".
+**Migration shim (opt-in, `data-compat="legacy"`).** Mirrors the incumbent's global consent object and its `necessary/preferences/statistics/marketing` flags, `.hasResponse`, `.renew()` and `.withdraw()`, re-emits its accept / decline / load / consent-ready / tags-executed events, and maps its `data-*` script attributes onto our purposes. A tenant switching supplier changes one script tag and nothing else. **This is a sales weapon and it costs about a day of work** — build it in Phase C3, not "later". Note that a compatibility layer has to answer to the other product's API names *in code*: keep those confined to one adapter file, and never in our own documentation, UI or marketing.
 
 ### 4.8 Performance budget (enforced in CI, not aspired to)
 
@@ -305,7 +305,7 @@ Rulesets are **platform-owned rows**, not tenant-editable code — tenants choos
 
 ### 5.3 Banner variants per region
 
-One config, N rendered variants — not N configs. Cookiebot requires a separate domain group (and therefore a separate CBID and separate configuration object) per region, which is why multi-region Cookiebot deployments sprawl. Ours resolves the ruleset at render time from one document, so a tenant maintains one banner and one declaration.
+One config, N rendered variants — not N configs. The incumbents require a separate domain group — and therefore a separate site id and configuration object — per region, which is why multi-region deployments sprawl. Ours resolves the ruleset at render time from one document, so a tenant maintains one banner and one declaration.
 
 ---
 
@@ -321,7 +321,7 @@ One config, N rendered variants — not N configs. Cookiebot requires a separate
 | Vendor descriptions | `consent_vendors` | Same route |
 | Cookie declaration purposes | `cookie_classifications` | Platform-maintained, translated centrally — the tenant never translates these |
 
-**Cookiebot does not document auto-translation of custom banner copy** — its "46 languages" covers template strings only, so a tenant who writes their own body text ships it in one language. We already have an AI integration layer and `content_translations`; making custom copy translatable is a genuine, demonstrable gap-filler.
+**The incumbents do not document auto-translation of custom banner copy** — a "46 languages" claim covers template strings only, so a tenant who writes their own body text ships it in one language. We already have an AI integration layer and `content_translations`; making custom copy translatable is a genuine, demonstrable gap-filler.
 
 ### 6.2 Locale resolution
 
@@ -537,7 +537,7 @@ Under **Website & Consent ▸ Consent**. Every screen uses the existing `<x-data
 | **Overview** | Opt-in rate (7/30/90 days), by purpose, by region; banner impressions; open findings; last scan; fail-closed rate |
 | **Sites** | Create/duplicate a site; site key; blocking mode; ruleset; lifetime; white-label toggle |
 | **Domains** | Add domain, DNS verification status, last-seen traffic, custom consent host + certificate status |
-| **Install** | Copy-paste snippet, GTM template download, WordPress/Shopify instructions, **live verification** ("we can see your script on 3 of 4 domains"), Cookiebot-compat toggle |
+| **Install** | Copy-paste snippet, GTM template download, WordPress/Shopify instructions, **live verification** ("we can see your script on 3 of 4 domains"), legacy-CMP compatibility toggle |
 | **Banner designer** | Live preview across layouts, locales and rulesets side by side; token pickers only; the regulator checklist enforced inline (reject-all parity cannot be switched off); publish captures hash + screenshot per locale |
 | **Purposes** | Platform defaults plus tenant additions; category; opt-out regions; per-locale name/description |
 | **Vendors** | Named third parties, hosts, privacy URLs, purpose mapping; auto-suggested from scan findings |
@@ -569,11 +569,11 @@ Under **Website & Consent ▸ Consent**. Every screen uses the existing `<x-data
 | `GET /c/{site_key}/i18n/{locale}.json` | none | CDN, immutable |
 | `POST /api/v1/consent` | none | **Origin must match a verified domain on that site.** Rate-limited per IP and per `consent_id`. Strict schema; unknown keys rejected; ≤4 KB body |
 | `GET /api/v1/consent/{consent_id}` | tenant API key | The visitor's own history, for a tenant's DSAR workflow |
-| `POST /api/v1/sites` · `/domains` · `/banner/publish` | tenant API key + capability | **The provisioning API Cookiebot doesn't have** |
+| `POST /api/v1/sites` · `/domains` · `/banner/publish` | tenant API key + capability | **The provisioning API the incumbents don't have** |
 | `GET /api/v1/stats` | tenant API key | Opt-in rates, no personal data |
 | Webhooks: `consent.recorded`, `scan.completed`, `cookie.discovered`, `finding.opened` | HMAC-signed | **Nobody in this market ships webhooks.** It is how a tenant wires consent into their own stack |
 
-API keys are per organisation, hashed at rest, rotatable, scoped by capability, and never appear in a URL path — a direct correction of Cookiebot's static-key-in-the-URL design.
+API keys are per organisation, hashed at rest, rotatable, scoped by capability, and never appear in a URL path — a direct correction of the static-key-in-the-URL design used elsewhere.
 
 ### 9.2 Threats and controls
 
@@ -604,7 +604,7 @@ Not guidance — behaviour that cannot be configured away.
 9. **GPC honoured** as an opt-out where the ruleset recognises it.
 10. **WCAG 2.2 AA on the banner itself**: `role="dialog"`, `aria-modal`, focus trap and restoration, Escape closes to the least-permissive state (never "accept"), full keyboard operation, 44px targets, contrast from tokens, screen-reader announcement, respects `prefers-reduced-motion`. The banner is the first thing every visitor meets and the most-audited component in the product.
 
-**Proof retention** runs on its own clock: processing duration plus the limitation period — 6 years in the UK — configurable per tenant with a floor, not the 12 months Cookiebot erases at. Interface provenance (config JSON, hash, screenshot per locale) is retained indefinitely and contains no personal data, so it costs nothing to keep and answers the allegation that actually gets made — that the interface was manipulative.
+**Proof retention** runs on its own clock: processing duration plus the limitation period — 6 years in the UK — configurable per tenant with a floor, not the 12 months the self-serve tools erase at. Interface provenance (config JSON, hash, screenshot per locale) is retained indefinitely and contains no personal data, so it costs nothing to keep and answers the allegation that actually gets made — that the interface was manipulative.
 
 ---
 
@@ -628,7 +628,7 @@ Not guidance — behaviour that cannot be configured away.
 
 ### 11.2 Classification
 
-Four layers, in order: **tenant override** (always wins) → **exact/pattern match** in `cookie_classifications` → **vendor host inference** from the request initiator → **LLM classification of the tail** via the existing `ai_integrations` layer, written back to the global cache with a confidence score and evidence. Anything below a confidence threshold lands in the tenant's "unclassified" queue rather than being silently guessed — Cookiebot's fail-open behaviour here (unclassified cookies are *not* blocked) is a defect we should not copy.
+Four layers, in order: **tenant override** (always wins) → **exact/pattern match** in `cookie_classifications` → **vendor host inference** from the request initiator → **LLM classification of the tail** via the existing `ai_integrations` layer, written back to the global cache with a confidence score and evidence. Anything below a confidence threshold lands in the tenant's "unclassified" queue rather than being silently guessed — Fail-open behaviour here — unclassified cookies are *not* blocked — is a defect we should not copy.
 
 **Bootstrap corpus, permissive licences only:** Open Cookie Database (Apache-2.0, ~2,264 cookies, ships an EDPB-format export), badger-sett (MIT, daily), Brave adblock-lists (MPL-2.0), EasyPrivacy (CC BY-SA branch), and the CookieBlock Zenodo corpus (CC-BY-4.0, 304k labelled cookies from 29,398 sites — commercial retraining permitted with attribution).
 
@@ -657,7 +657,7 @@ Bot protection is solved by **allowlisting**, not an arms race: documented stati
 | **Ledger integrity** | Attempted UPDATE/DELETE must fail under RLS; withdrawal creates a new row; cross-tenant read attempts must return nothing |
 | **Geo** | Synthetic requests with forged edge headers across GB / DE / US-CA / AU, asserting ruleset selection and banner variant |
 | **Cross-browser** | Chrome, Firefox, Safari (including ITP cookie lifetime), Edge, iOS Safari, Android Chrome |
-| **Migration shim** | A real Cookiebot integration snippet must work unmodified against our script with `data-compat="cookiebot"` |
+| **Migration shim** | A real third-party CMP snippet must work unmodified against our script in compatibility mode |
 
 ---
 
@@ -667,7 +667,7 @@ Bot protection is solved by **allowlisting**, not an arms race: documented stati
 |---|---|---|
 | **C1 — Foundations** | `consent_sites`, domains + verification, purposes, vendors; admin CRUD; site key issuance; config publish pipeline (JSON + hash + CDN) | 050 |
 | **C2 — Banner & ledger** | Banner designer (tokens, live preview, checklist enforced), i18n storage, publish with screenshot capture; loader + UI bundle; write API; `consent_records` partitioned; preference centre; declaration embed; **geo rulesets**; Consent Mode v2; GPC | 051–052 |
-| **C3 — Blocking engine** | Full patch surface (§4.2), host-based rules, hint stripping, fail-closed, server-side render gating for CMS sites, GTM template, **Cookiebot compat shim**, CDP test suite | — |
+| **C3 — Blocking engine** | Full patch surface (§4.2), host-based rules, hint stripping, fail-closed, server-side render gating for CMS sites, GTM template, **legacy-CMP compat shim**, CDP test suite | — |
 | **C4 — CRM & comms wiring** | `crm_contacts.consent_id`, consent card on the contact, timeline activities, `ConsentGate::allows()` gating every outbound marketing send, form-captured consent | 053 |
 | **C5 — Scanner** | Worker, three scenarios, multi-locale, classification cache + bootstrap corpora, findings, declaration generation, scheduling, diff alerts | 054–055 |
 | **C6 — API & reporting** | Provisioning API, stats API, webhooks, CSV/JSON export, reports, A/B comparison | 056 |
@@ -683,14 +683,14 @@ C1–C3 is a sellable product on their own: a compliant, branded, blocking, mult
 |---|---|---|
 | **E1** | Which edge provides the geo header — Cloudflare in front of Laravel Cloud, or Laravel Cloud's own? | Confirm before C2. If neither, MaxMind at our edge; **never** a client-side geo API |
 | **E2** | Consent cookie: first-party set by JS (works everywhere, ITP-capped at 7 days on Safari) or via a CNAMEd first-party endpoint (survives ITP, needs the custom host) | JS cookie for the base tier; the CNAMEd path is a white-label add-on benefit. **Document the Safari 7-day cap honestly** — it means re-prompting, and every competitor is quiet about it |
-| **E3** | Do we offer cross-domain consent sharing? | **No, and say why.** Cookiebot's is documented as working only within one top-level domain, requires third-party cookies, DNT off and Preferences consent, and fails silently for exactly the privacy-conscious users it matters for. Support a domain group under one registrable domain and be straight about the limit |
+| **E3** | Do we offer cross-domain consent sharing? | **No, and say why.** The incumbent implementations are documented as working only within one top-level domain, require third-party cookies, DNT off and Preferences consent, and fail silently for exactly the privacy-conscious users it matters for. Support a domain group under one registrable domain and be straight about the limit |
 | **E4** | Is the ledger write synchronous with the banner decision, or queued? | Fire-and-forget with a retry queue in the client; the cookie is the source of truth for behaviour, the ledger is the evidence |
 | **E5** | Do tenants get the raw scan HAR? | Summary and findings in the UI; HAR on request, 90-day lifecycle. It is large and contains their visitors' request data |
-| **E6** | Free tier? | A single-domain free tier is Cookiebot's main acquisition channel and costs us little (scanning is ~£0.02–0.06 per 50-page site). Recommend one, capped at 50 pages and monthly scans |
+| **E6** | Free tier? | A single-domain free tier is the incumbents' main acquisition channel and costs us little (scanning is ~£0.02–0.06 per 50-page site). Recommend one, capped at 50 pages and monthly scans |
 | **E7** | Who owns the compliance claim? | We supply a tool; the tenant is the controller. Ship a "compliance posture" report, never a compliance certificate, and put that in the DPA |
 
 ---
 
 ## 15. What this replaces
 
-For BespokeLMS itself, this module removes the need for Cookiebot or any equivalent on every property we run. For tenants it becomes a product line that can be sold with or without the LMS. And it closes the loop that no third-party CMP can close: **a visitor's cookie choice, made on a marketing page, is on their CRM contact record within seconds, and it is what decides whether the next marketing email is allowed to send.**
+For BespokeLMS itself, this module removes the need for a third-party CMP on every property we run. For tenants it becomes a product line that can be sold with or without the LMS. And it closes the loop that no third-party CMP can close: **a visitor's cookie choice, made on a marketing page, is on their CRM contact record within seconds, and it is what decides whether the next marketing email is allowed to send.**
