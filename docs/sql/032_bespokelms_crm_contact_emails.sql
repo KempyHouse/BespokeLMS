@@ -1,0 +1,26 @@
+-- 032 + 032b: multiple email addresses per CRM contact.
+-- APPLIED to Supabase project pqmdtqsscyltykgcwwus on 2026-07-25 as
+-- `bespokelms_crm_contact_emails_032` and `..._032b`. Trigger behaviour
+-- PROVEN live (primary mirrors into crm_contacts.email; auto-link fires when
+-- a matching address is added; rolled back).
+--
+-- crm_contact_emails is the source of truth for a contact's addresses:
+-- label (work/personal/other), exactly one primary per contact, unique per
+-- owning organisation. A trigger mirrors the primary into crm_contacts.email
+-- so lists/dedup/auto-link fast path keep working. The auto-link matcher is
+-- extended to match ANY address; adding an address re-runs matching.
+-- crm_set_contact_emails() replaces a contact's whole set atomically
+-- (service-role only) — the app edits addresses as one list.
+--
+-- See the applied migrations in Supabase history for the full DDL:
+--   create table crm_contact_emails (…, label check work/personal/other,
+--     is_primary, composite FK to crm_contacts, shape CHECK '@');
+--   unique (contact_id, lower(email)); unique (owning_org, lower(email));
+--   unique (contact_id) where is_primary;
+--   drop index crm_contacts_email_unique;  -- dedup rule moved here
+--   trigger crm_contact_emails_sync_primary  -> mirror primary to contact
+--   crm_apply_contact_links(): join extended with crm_contact_emails
+--   trigger crm_contact_emails_auto_link     -> rematch on added address
+--   function crm_set_contact_emails(p_owning, p_contact, p_rows jsonb)
+--     -> atomic delete+insert, EXECUTE service_role only
+--   backfill: existing crm_contacts.email -> primary 'work' rows
