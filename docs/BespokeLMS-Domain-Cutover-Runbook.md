@@ -1,6 +1,6 @@
 # BespokeLMS — Domain cutover runbook (Phase 1)
 
-**Date:** 25 July 2026 · **Status:** code and schema are in place; the steps below are yours to run
+**Date:** 25 July 2026 · **Status:** deployed (`43f3739` pushed and live on app.bespokelms.com); the steps below are yours to run
 **Applies to:** `app.bespokelms.com`, `www.bespokelms.com`, `bespokelms.com`
 
 Phase 1 of the Website & Consent module is built: one Laravel application can now serve the LMS, a
@@ -55,14 +55,19 @@ If anything looks wrong, nothing has been cut over — you can roll the menu bac
 Add to the deployed environment:
 
 ```
-TENANCY_APP_HOSTS=localhost,127.0.0.1,::1,<your-laravel-cloud-hostname>
+TENANCY_APP_HOSTS=localhost,127.0.0.1,::1,<laravel-cloud-internal-hostname>
 TENANCY_STRICT_HOSTS=false
 TENANCY_SITE_INDEXABLE=false
 ```
 
-`TENANCY_APP_HOSTS` must include the Laravel Cloud deployment hostname, otherwise that hostname
-depends on a database lookup to serve the application. Keep `TENANCY_STRICT_HOSTS=false` until
-step 5.
+`TENANCY_APP_HOSTS` should include whatever hostname Laravel Cloud uses for internal health checks
+(the `*.laravel.cloud` deployment hostname), so that path never depends on a database lookup. Do NOT
+put `app.bespokelms.com` in it — that host is a real `tenant_domains` row, and resolving it properly
+is what gives the request its tenant context. Keep `TENANCY_STRICT_HOSTS=false` until step 5.
+
+Deployment state as at 25 July 2026: the app runs on Laravel Cloud (org `kemp.house`, app
+`bespokelms-app`, environment `production`, EU West Ireland), deploying from `KempyHouse/BespokeLMS-app`
+`main`, with `app.bespokelms.com` already attached and verified.
 
 ---
 
@@ -89,12 +94,14 @@ turns Verified — that is deliberate, and it is what closes the subdomain-takeo
 
 | Type | Host | Value | Notes |
 |---|---|---|---|
-| CNAME | `app` | *(Laravel Cloud target)* | the LMS |
+| CNAME | `app` | — | **Already done.** `app.bespokelms.com` is an existing verified custom domain on Laravel Cloud and is serving the app today |
 | CNAME | `www` | *(Laravel Cloud target)* | replaces the dead `bespokelms.netlify.app` record |
 | ALIAS/A | `@` | *(Laravel Cloud target, or their apex address)* | apex → 301 → www |
 
-Add each hostname as a custom domain in Laravel Cloud first so a certificate is issued; DNS and the
-certificate need to agree before traffic arrives.
+Add `www.bespokelms.com` and `bespokelms.com` as custom domains in Laravel Cloud first so certificates
+are issued; DNS and the certificate need to agree before traffic arrives. Nothing about `app.` changes —
+it keeps working throughout, and verifying its row in the Domains console only adds tenant context to
+the resolver, not new behaviour.
 
 ---
 
