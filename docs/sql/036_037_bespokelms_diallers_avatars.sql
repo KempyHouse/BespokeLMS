@@ -1,0 +1,25 @@
+-- 036 + 037 (APPLIED to Supabase — this file is a summary; the migration
+-- history is the source of truth).
+--
+-- 036 `bespokelms_tenant_diallers_036` — per-tenant phone dialler
+--   tenant_diallers (organization_id PK → organizations, name,
+--   url_template, enabled, updated_by, timestamps).
+--   CHECK: url_template must be https:// AND contain {number} or {digits}.
+--   RLS: owner ALL (is_platform_owner); tenant admins read their own row
+--   (organization_id = auth_org_id() AND is_admin()) — mirrors
+--   tenant_modules_org_read.
+--   App: Phone dialler card on the tenant console (AI & integrations),
+--   sudo-gated PUT tenants/{tenant}/dialler; CRM phone links resolve via
+--   CrmOptions::phoneHref (dialler URL in a new tab, else tel:).
+--   Proven: valid insert OK; http:// and missing-placeholder inserts
+--   rejected with check_violation (rolled back).
+--
+-- 037 `bespokelms_crm_contact_avatars_037` — contact profile images
+--   crm_contacts.avatar_path text.
+--   storage bucket crm-avatars (PRIVATE) + policy "crm avatars org read":
+--   first path segment must be a uuid and pass crm_org_access() — the
+--   exact shape of the crm-documents policy, so avatar storage is
+--   org-exact too. Objects live at {org}/contacts/{contact}/avatar-*.ext;
+--   served only via 300s signed URLs.
+--   App: upload/replace/remove on the contact page (PNG/JPG/WebP ≤5MB),
+--   initials fallback in the header, old objects deleted best-effort.
