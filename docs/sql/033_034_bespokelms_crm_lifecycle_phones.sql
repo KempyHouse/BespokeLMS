@@ -1,0 +1,17 @@
+-- 033 + 034: tenant-lifecycle intelligence + multiple phone numbers.
+-- APPLIED to Supabase project pqmdtqsscyltykgcwwus on 2026-07-25 as
+-- `bespokelms_crm_tenant_lifecycle_033` and `bespokelms_crm_contact_phones_034`.
+-- Full DDL lives in the Supabase migration history.
+--
+-- 033 — a tenant-linked account IS a customer:
+--   BEFORE trigger crm_accounts_tenant_stage coerces lead/MQL/SQL/opportunity
+--   to 'customer' whenever organization_id is set (churned/partner stay valid);
+--   AFTER trigger logs "Lifecycle set to Customer" to the account timeline;
+--   backfill promoted existing linked accounts (March Foods verified live).
+--
+-- 034 — crm_contact_phones (mirror of the 032 email set):
+--   label work/mobile/home/other; ONE primary per contact; E.164 shape CHECK;
+--   unique (contact_id, phone) but NOT unique per organisation (shared
+--   switchboards are legitimate); trigger mirrors primary -> crm_contacts.phone
+--   and first mobile -> crm_contacts.mobile; crm_set_contact_phones()
+--   atomic replace (service_role only); backfilled from the legacy columns.
