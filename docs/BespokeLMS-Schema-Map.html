@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BespokeLMS — Schema Map (migrations 003–011)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<style>
+  :root{
+    --brand:#009DE1; --brand-dark:#007bb1; --ink:#1f2a30; --ink-soft:#55646c;
+    --ink-faint:#8a97a0; --line:#e5e9ec; --surface:#ffffff; --paper:#f4f2ef;
+    --green:#2e7d32; --green-soft:#e7f2e8; --amber:#a86400; --amber-soft:#fbf0dc;
+    --violet:#5b3fa8; --violet-soft:#efeaf9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:var(--ink);background:var(--paper);line-height:1.5;-webkit-font-smoothing:antialiased}
+  header.top{background:var(--surface);border-bottom:1px solid var(--line);padding:28px 32px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  .brandmark{display:inline-flex;align-items:center;gap:10px}
+  .brandmark .b{background:var(--brand);color:#fff;font-weight:800;border-radius:8px;width:34px;height:34px;
+       display:grid;place-items:center;font-size:18px}
+  .brandmark .name{font-weight:800;font-size:20px}.brandmark .name span{color:var(--brand)}
+  h1{font-size:26px;margin:16px 0 4px;font-weight:800}
+  .sub{color:var(--ink-soft);max-width:760px;font-size:15px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:12.5px;color:var(--ink-soft)}
+  .legend b{color:var(--ink)}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700}
+  main{padding:32px 0 64px}
+  section.domain{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin:0 0 22px;
+       overflow:hidden;box-shadow:0 1px 2px rgba(20,30,40,.04)}
+  .dhead{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .dhead .mig{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;font-weight:700;
+       color:#fff;background:var(--brand);border-radius:6px;padding:2px 8px}
+  .dhead h2{font-size:18px;margin:0;font-weight:800}
+  .dhead .blurb{color:var(--ink-soft);font-size:13.5px;flex:1 1 320px;min-width:240px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;padding:20px 22px}
+  .tbl{border:1px solid var(--line);border-radius:10px;padding:13px 14px;background:#fcfdfe}
+  .tbl .tn{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700;font-size:13.5px;color:var(--brand-dark)}
+  .tbl .tn .badge{font-family:inherit}
+  .tbl .purpose{font-size:12.5px;color:var(--ink-soft);margin:5px 0 8px}
+  .tbl .cols{font-size:12px;color:var(--ink)}
+  .tbl .cols code{background:var(--paper);border-radius:4px;padding:1px 5px;font-size:11.5px}
+  .tbl .fk{font-size:11.5px;color:var(--ink-faint);margin-top:7px}
+  .tbl .fk b{color:var(--ink-soft)}
+  .b-new{background:var(--green-soft);color:var(--green)}
+  .b-ext{background:var(--amber-soft);color:var(--amber)}
+  .b-exist{background:var(--violet-soft);color:var(--violet)}
+  .erd{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;margin:0 0 22px;overflow:auto}
+  .erd h2{margin:0 0 4px;font-size:18px}
+  .erd .blurb{color:var(--ink-soft);font-size:13.5px;margin-bottom:14px}
+  .mermaid{min-width:760px}
+  footer{color:var(--ink-faint);font-size:12.5px;text-align:center;padding:24px}
+  .note{background:#fff8ef;border:1px solid var(--amber-soft);border-radius:10px;padding:12px 16px;margin:0 0 22px;
+       font-size:13px;color:#6b4e12}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brandmark"><div class="b">B</div><div class="name">Bespoke<span>LMS</span></div></div>
+  <h1>Course platform — database schema map</h1>
+  <div class="sub">The full data model built across migrations <b>003–011</b> (on top of the tenancy/RBAC foundation in 001–002). Every table is tenant-scoped and protected by Postgres Row-Level Security cascading down the organisations tree. Validated on Postgres 16; not yet applied to Supabase.</div>
+  <div class="legend">
+    <span><span class="pill b-new">new</span> created by this migration</span>
+    <span><span class="pill b-ext">extended</span> columns added to an existing table</span>
+    <span><span class="pill b-exist">existing</span> from 001, reused</span>
+    <span><b>RLS</b> everywhere · <b>tokens</b> for all UI colour · <b>service-role</b> only for owner-console reads</span>
+  </div>
+</div></header>
+
+<main class="wrap">
+
+  <div class="erd">
+    <h2>The spine — content, enrolment &amp; delivery</h2>
+    <div class="blurb">A course is a stable identity; its editable content lives in immutable-on-publish <b>versions</b>; a learner enrols against one pinned version and takes it through <b>attempts</b> that record SCORM/native progress.</div>
+    <pre class="mermaid">
+erDiagram
+  organizations ||--o{ courses : owns
+  courses ||--o{ course_versions : "has versions"
+  courses ||--o| course_versions : "current published"
+  course_versions ||--o{ modules : contains
+  modules ||--o{ lessons : contains
+  lessons ||--o{ slides : contains
+  course_versions ||--o| scorm_packages : "or a SCORM package"
+  course_versions ||--o{ content_translations : "language variants"
+  profiles ||--o{ enrollments : "learner"
+  courses ||--o{ enrollments : "enrolled on"
+  course_versions ||--o{ enrollments : "pinned to"
+  enrollments ||--o{ course_attempts : "attempts"
+  course_attempts ||--o{ scorm_tracking : "SCORM CMI"
+  course_attempts ||--o{ native_progress : "per slide"
+  courses ||--o| course_pricing : "pricing + retake policy"
+  courses ||--o{ certificates : "on pass"
+  courses ||--o{ work_item_subjects : "tracked by a card"
+    </pre>
+  </div>
+
+  <div class="note"><b>Apply order:</b> 001 → 002 (live) → 003 → 004 → 005 → 006 → 007 → 008 → 009 → 010 → 011. Each migration was validated by applying the full chain on a throwaway Postgres 16 with real RLS role-switch tests.</div>
+
+  <div id="domains"></div>
+</main>
+<footer>BespokeLMS schema map · generated from migrations 003–011 · reference only</footer>
+
+<script>
+mermaid.initialize({startOnLoad:true, theme:'neutral', er:{useMaxWidth:false}});
+
+const DOMAINS = [
+  { mig:'003', title:'Content model & two-axis versioning',
+    blurb:'Course = stable identity shell; versions are immutable on publish; slides are one typed table; language variants hang off versions.',
+    tables:[
+      {n:'courses', b:'ext', p:'Identity/catalogue shell.', c:'title, slug*, content_type, current_published_version_id, catalog_status, owner_org_id, search_vector', fk:'owner → organizations'},
+      {n:'course_versions', b:'new', p:'One editorial revision; immutable once published; enrolments pin here.', c:'version_no, semver, status, published_at, review_interval, review_due_at, is_scorm', fk:'course → courses'},
+      {n:'modules', b:'new', p:'Optional grouping level.', c:'title, position', fk:'course_version'},
+      {n:'lessons', b:'new', p:'Lesson within a module.', c:'title, position', fk:'module'},
+      {n:'slides', b:'new', p:'Typed content unit (image_text / video / document).', c:'type, payload(jsonb), completion_rule, is_required', fk:'lesson'},
+      {n:'content_translations', b:'new', p:'Per-locale text; the language axis.', c:'entity_type, entity_id, locale, fields(jsonb), status', fk:'polymorphic'},
+      {n:'enrollments', b:'ext', p:'Learner ↔ course; pinned to a version.', c:'+ course_version_id, + certificate_expires_at', fk:'user, course, version'},
+    ]},
+  { mig:'004', title:'Tenant visibility & entitlement',
+    blurb:'Which tenants can see each course, inheriting down the org tree, enforced by RLS via can_see_course().',
+    tables:[
+      {n:'course_visibility', b:'new', p:'Scope per course.', c:'scope: global | allowlist | private | denylist', fk:'course'},
+      {n:'course_entitlements', b:'new', p:'Grants/revokes against an org node (inherit down subtree).', c:'state, license_terms, seat_cap, valid_from/until', fk:'course, org_node'},
+    ]},
+  { mig:'005', title:'Editorial workflow — the planning tool',
+    blurb:'Data-driven state machine, per-course author/reviewer/approver, separation of duties, sign-off checklist, review dates.',
+    tables:[
+      {n:'workflow_states / _transitions', b:'new', p:'Configurable lifecycle (global default + per-tenant).', c:'key, label, is_initial/terminal, requires_distinct_actor', fk:''},
+      {n:'course_workflow_state / _history', b:'new', p:'Current state per version + every transition.', c:'state_id, actor, comment, at', fk:'course_version'},
+      {n:'course_assignments', b:'new', p:'author / reviewer / approver per course.', c:'role', fk:'course, user'},
+      {n:'course_approvals', b:'new', p:'Immutable sign-off record.', c:'decision, comment, signed_at', fk:'course_version'},
+      {n:'review_schedule', b:'new', p:'Content review clock (12-month default).', c:'review_interval, review_due_at', fk:'course'},
+      {n:'workflow_checklist_items / _results', b:'new', p:'Publish-gate checklist + sign-off.', c:'label, is_required, checked_by', fk:'course_version'},
+    ]},
+  { mig:'006', title:'Taxonomy with per-tenant override',
+    blurb:'Global category/tag dictionary owned by the platform, overlaid per tenant (rename/hide/re-badge) — COALESCE resolution.',
+    tables:[
+      {n:'course_categories', b:'ext', p:'Global category dictionary (+ parent_id, key).', c:'name, parent_id, key', fk:'self'},
+      {n:'tags / course_tags', b:'new', p:'Global tags + course↔tag (nullable org = tenant-private).', c:'key, label, organization_id?', fk:'course, tag'},
+      {n:'tenant_category_overrides', b:'new', p:'Rename / re-parent / hide a category per tenant.', c:'override_label, hidden, sort_order', fk:'org, category'},
+      {n:'tenant_tags', b:'new', p:'A tenant’s own private tags.', c:'label', fk:'org'},
+      {n:'tenant_course_overrides', b:'new', p:'Re-badge a global course per tenant.', c:'override_title/summary/category', fk:'org, course'},
+    ]},
+  { mig:'007', title:'Course-editor fields — commercial & catalogue',
+    blurb:'Media/SEO/cert on courses; descriptive copy staged on versions; pricing mechanism + retake/retry policy (owner-configurable), territories, authors.',
+    tables:[
+      {n:'courses', b:'ext', p:'Hero/trailer, SEO meta, CPD, certification.', c:'hero_image_*, trailer_*, meta_*, cpd_points, issues_certificate, certificate_validity, auto_reassign_on_expiry', fk:''},
+      {n:'course_versions', b:'ext', p:'Staged descriptive copy + assessment.', c:'description(+short), aims(+short), objectives(+short), assessment_placement, pass_mark_pct', fk:''},
+      {n:'course_pricing', b:'new', p:'Per-course pricing + retake/retry overrides.', c:'pricing_type, price_pennies, credit_cost, assessment_retry_limit, retake_after_pass, access_revoked_on_pass', fk:'course'},
+      {n:'pricing_defaults', b:'new', p:'Platform-owned default policy per pricing_type.', c:'(resolved by view v_course_effective_pricing)', fk:''},
+      {n:'territories / course_territories', b:'new', p:'Jurisdiction targeting (region→country).', c:'code, name, parent_id', fk:'course, territory'},
+      {n:'course_authors', b:'new', p:'Internal user or external named SME.', c:'profile_id?, display_name?, credit_label', fk:'course'},
+      {n:'course_notify_requests', b:'new', p:'Coming-soon “notify me”.', c:'profile_id?, email?, notified_at', fk:'course'},
+    ]},
+  { mig:'008', title:'Work management & Kanban engine',
+    blurb:'Generic, tenant-scoped board → stage → work-item engine with a polymorphic subject. Course Production tracker, client ideas, marketing all sit on it.',
+    tables:[
+      {n:'boards', b:'new', p:'A configurable pipeline per application per tenant.', c:'application, name, is_template, retention_days', fk:'org'},
+      {n:'board_stages', b:'new', p:'Kanban columns (colours = tokens).', c:'key, label, sort, is_live, default_assignee, wip_limit', fk:'board'},
+      {n:'priorities', b:'new', p:'Configurable priorities per board.', c:'label, sort, colour tokens', fk:'board'},
+      {n:'work_items', b:'new', p:'A card: stage, priority, assignee, dates, links.', c:'title, flag, notes, target_go_live, upload_date, review_date, archived', fk:'board, stage'},
+      {n:'work_item_subjects', b:'new', p:'Polymorphic — the card IS a course/idea/deal or nothing.', c:'subject_type, subject_id', fk:'work_item'},
+      {n:'work_item_log', b:'new', p:'Immutable per-change audit.', c:'changed_fields(jsonb), source', fk:'work_item'},
+      {n:'stage_automation', b:'new', p:'On-entry rules (notify/stamp/branch/set).', c:'action, params(jsonb)', fk:'stage'},
+      {n:'board_members / sprints / sprint_items', b:'new', p:'Membership roles + sprint containers.', c:'board_role, starts/ends_on', fk:'board'},
+    ]},
+  { mig:'009', title:'Change management (minor vs major)',
+    blurb:'Classifies each edit; DB-enforced separation of duties and a “can’t approve a major as no-impact” guard; feeds re-certification.',
+    tables:[
+      {n:'change_records', b:'new', p:'Minor (typo) vs major (e.g. legislation → new version + re-cert).', c:'classification, category, learner_impact, status, raised_by, approved_by (≠ raiser)', fk:'course, versions'},
+    ]},
+  { mig:'010', title:'Learner delivery & tracking',
+    blurb:'Attempts per enrolment (SCORM/cmi5 registration), the SCORM CMI data model, native slide progress, and an xAPI store. Learner records isolated by enrolment visibility.',
+    tables:[
+      {n:'course_attempts', b:'new', p:'One row per registration/attempt.', c:'attempt_no, registration_uuid, status, score_scaled', fk:'enrollment'},
+      {n:'scorm_packages', b:'new', p:'Imported SCORM package metadata.', c:'standard, launch_url, storage_prefix, content_hash', fk:'course_version'},
+      {n:'scorm_tracking', b:'new', p:'CMI per SCO (bookmark + resume).', c:'completion/success_status, score_*, location, suspend_data', fk:'attempt'},
+      {n:'native_progress', b:'new', p:'Per-slide engagement for native courses.', c:'engaged, view_seconds, points', fk:'attempt, slide'},
+      {n:'xapi_statements', b:'new', p:'LRS store (cmi5 profile).', c:'actor, verb, object_id, result(jsonb)', fk:'org'},
+    ]},
+  { mig:'011', title:'ElevenLabs voiceover',
+    blurb:'Pre-generated narration, content-hash cached (no re-billing), per-brand voice, and a per-tenant usage ledger (ElevenLabs bills one shared pool).',
+    tables:[
+      {n:'voiceover_assets', b:'new', p:'Baked narration per slide/locale; cached by content_hash.', c:'content_hash*, voice_id, storage_path, duration_ms, character_count, status, timestamps_json', fk:'course, slide'},
+      {n:'tenant_voice_profile', b:'new', p:'Per-tenant/locale brand voice.', c:'voice_id, model_id, voice_settings(jsonb)', fk:'org'},
+      {n:'tenant_voiceover_usage', b:'new', p:'Per-tenant metering + cap.', c:'period, characters_used, cap_characters', fk:'org'},
+    ]},
+];
+
+const badge = b => b==='new' ? '<span class="pill b-new">new</span>'
+                 : b==='ext' ? '<span class="pill b-ext">ext</span>'
+                 : '<span class="pill b-exist">exist</span>';
+
+document.getElementById('domains').innerHTML = DOMAINS.map(d => `
+  <section class="domain">
+    <div class="dhead"><span class="mig">${d.mig}</span><h2>${d.title}</h2><div class="blurb">${d.blurb}</div></div>
+    <div class="grid">
+      ${d.tables.map(t => `
+        <div class="tbl">
+          <div class="tn">${t.n} ${badge(t.b)}</div>
+          <div class="purpose">${t.p}</div>
+          <div class="cols">${t.c.replace(/`([^`]+)`/g,'<code>$1</code>')}</div>
+          ${t.fk ? `<div class="fk"><b>fk:</b> ${t.fk}</div>` : ''}
+        </div>`).join('')}
+    </div>
+  </section>`).join('');
+</script>
+</body>
+</html>

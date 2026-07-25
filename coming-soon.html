@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BespokeLMS — Coming soon</title>
+<meta name="description" content="BespokeLMS — a 100% custom-built, white-label Learning Management System. Your brand. Your courses. Your LMS. Launching soon." />
+<meta name="robots" content="index,follow" />
+<meta property="og:title" content="BespokeLMS — Coming soon" />
+<meta property="og:description" content="Your brand. Your courses. Your LMS. A white-label LMS built around you — launching soon." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet" />
+<style>
+  /* ------- Design tokens (single source of truth) ------- */
+  :root{
+    /* colour */
+    --c-bg:#0a0e13;
+    --c-bg-elev:#111a22;
+    --c-ink:#eef3f7;
+    --c-ink-soft:#9fb1c0;
+    --c-ink-faint:#67788a;
+    --c-accent:#12b5e5;          /* BespokeLMS blue */
+    --c-accent-strong:#0a93c4;
+    --c-accent-ink:#04141c;      /* text on accent */
+    --c-border:rgba(255,255,255,.10);
+    --c-border-soft:rgba(255,255,255,.06);
+    --c-focus:#7dd3fc;
+    /* spacing scale (4px base) */
+    --s-1:.25rem; --s-2:.5rem; --s-3:.75rem; --s-4:1rem;
+    --s-5:1.25rem; --s-6:1.5rem; --s-8:2rem; --s-10:2.5rem;
+    --s-12:3rem; --s-16:4rem; --s-20:5rem;
+    /* radius */
+    --r-sm:.5rem; --r-md:.85rem; --r-lg:1.1rem; --r-pill:999px;
+    /* typography */
+    --font-sans:'Lato',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --fs-eyebrow:.78rem;
+    --fs-body:clamp(1rem,1.4vw,1.15rem);
+    --fs-h1:clamp(2.5rem,7vw,5rem);
+    --fs-sub:clamp(1.05rem,2.2vw,1.3rem);
+    --lh-tight:1.05;
+    --lh-body:1.6;
+    /* effects */
+    --shadow-cta:0 10px 30px -8px rgba(18,181,229,.5);
+    --ring:0 0 0 3px var(--c-focus);
+    --maxw:64rem;
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    min-height:100svh;
+    background:var(--c-bg);
+    color:var(--c-ink);
+    font-family:var(--font-sans);
+    font-size:var(--fs-body);
+    line-height:var(--lh-body);
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* ambient brand glow (decorative) */
+  .glow{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .glow::before,.glow::after{
+    content:"";position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;
+  }
+  .glow::before{
+    width:38rem;height:38rem;top:-14rem;right:-10rem;
+    background:radial-gradient(circle at center,rgba(18,181,229,.45),transparent 65%);
+  }
+  .glow::after{
+    width:32rem;height:32rem;bottom:-16rem;left:-12rem;
+    background:radial-gradient(circle at center,rgba(23,195,178,.30),transparent 65%);
+  }
+
+  .shell{
+    position:relative;z-index:1;
+    width:100%;max-width:var(--maxw);
+    margin-inline:auto;
+    padding:var(--s-6) var(--s-5);
+    flex:1 0 auto;
+    display:flex;flex-direction:column;
+  }
+  @media (min-width:48rem){ .shell{ padding:var(--s-10) var(--s-8);} }
+
+  /* header / brand */
+  .masthead{display:flex;align-items:center;gap:var(--s-3)}
+  .brand{display:inline-flex;align-items:center;gap:var(--s-3);text-decoration:none;color:var(--c-ink)}
+  .brand__mark{
+    width:2.5rem;height:2.5rem;border-radius:var(--r-md);
+    display:grid;place-items:center;
+    background:linear-gradient(150deg,var(--c-accent),var(--c-accent-strong));
+    color:var(--c-accent-ink);font-weight:900;font-size:1.35rem;line-height:1;
+    box-shadow:var(--shadow-cta);
+  }
+  .brand__name{font-weight:900;font-size:1.3rem;letter-spacing:-.01em}
+  .brand__name b{color:var(--c-accent)}
+
+  /* hero */
+  main{flex:1 0 auto;display:flex;align-items:center}
+  .hero{padding:var(--s-16) 0;max-width:48rem}
+  @media (min-width:48rem){ .hero{ padding:var(--s-20) 0;} }
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:var(--s-2);
+    font-size:var(--fs-eyebrow);font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--c-accent);
+    padding:var(--s-2) var(--s-3);
+    border:1px solid var(--c-border);border-radius:var(--r-pill);
+    background:rgba(18,181,229,.06);
+  }
+  .eyebrow__dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--c-accent);box-shadow:0 0 0 4px rgba(18,181,229,.18)}
+
+  h1{
+    margin:var(--s-6) 0 0;
+    font-size:var(--fs-h1);font-weight:900;line-height:var(--lh-tight);letter-spacing:-.02em;
+  }
+  h1 .accent{color:var(--c-accent)}
+  .lede{
+    margin:var(--s-6) 0 0;max-width:34rem;
+    font-size:var(--fs-sub);color:var(--c-ink-soft);
+  }
+
+  /* notify / cta */
+  .cta{margin-top:var(--s-10);display:flex;flex-wrap:wrap;gap:var(--s-3);align-items:center}
+  .field{
+    display:flex;flex-wrap:wrap;gap:var(--s-3);align-items:center;
+    width:100%;max-width:32rem;
+  }
+  label.visually-hidden{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+    clip:rect(0 0 0 0);white-space:nowrap;border:0;
+  }
+  input[type="email"]{
+    flex:1 1 15rem;min-width:0;
+    padding:var(--s-4) var(--s-5);
+    font:inherit;color:var(--c-ink);
+    background:var(--c-bg-elev);
+    border:1px solid var(--c-border);border-radius:var(--r-md);
+  }
+  input[type="email"]::placeholder{color:var(--c-ink-faint)}
+  input[type="email"]:focus-visible{outline:none;border-color:var(--c-accent);box-shadow:var(--ring)}
+
+  .btn{
+    appearance:none;border:0;cursor:pointer;
+    display:inline-flex;align-items:center;gap:var(--s-2);
+    padding:var(--s-4) var(--s-6);
+    font:inherit;font-weight:700;
+    color:var(--c-accent-ink);
+    background:linear-gradient(150deg,var(--c-accent),var(--c-accent-strong));
+    border-radius:var(--r-md);
+    box-shadow:var(--shadow-cta);
+    text-decoration:none;
+    transition:transform .15s ease,filter .15s ease;
+  }
+  .btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
+  .btn:focus-visible{outline:none;box-shadow:var(--ring),var(--shadow-cta)}
+  .btn__arrow{transition:transform .15s ease}
+  .btn:hover .btn__arrow{transform:translateX(3px)}
+
+  .cta__note{margin-top:var(--s-4);font-size:.92rem;color:var(--c-ink-faint)}
+  .cta__note a{color:var(--c-ink-soft)}
+
+  /* trusted by */
+  .trusted{margin-top:var(--s-16);border-top:1px solid var(--c-border-soft);padding-top:var(--s-8)}
+  .trusted__label{font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--c-ink-faint)}
+  .trusted__row{
+    margin-top:var(--s-5);display:flex;flex-wrap:wrap;gap:var(--s-6) var(--s-10);align-items:center;
+    color:var(--c-ink-soft);font-weight:700;
+  }
+  .trusted__row span{opacity:.85}
+
+  /* footer */
+  footer{
+    position:relative;z-index:1;
+    flex-shrink:0;
+    border-top:1px solid var(--c-border-soft);
+    color:var(--c-ink-faint);font-size:.9rem;
+  }
+  .footer__inner{
+    width:100%;max-width:var(--maxw);margin-inline:auto;
+    padding:var(--s-6) var(--s-5);
+    display:flex;flex-wrap:wrap;gap:var(--s-3) var(--s-6);align-items:center;justify-content:space-between;
+  }
+  @media (min-width:48rem){ .footer__inner{ padding:var(--s-6) var(--s-8);} }
+  footer a{color:var(--c-ink-soft);text-decoration:none}
+  footer a:hover{color:var(--c-ink)}
+  footer a:focus-visible{outline:none;box-shadow:var(--ring);border-radius:var(--r-sm)}
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+  }
+</style>
+</head>
+<body>
+  <div class="glow" aria-hidden="true"></div>
+
+  <div class="shell">
+    <header class="masthead">
+      <a class="brand" href="/" aria-label="BespokeLMS home">
+        <span class="brand__mark" aria-hidden="true">B</span>
+        <span class="brand__name">Bespoke<b>LMS</b></span>
+      </a>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span> Coming soon</p>
+        <h1>Your brand.<br />Your courses.<br /><span class="accent">Your LMS.</span></h1>
+        <p class="lede">
+          BespokeLMS is a 100% custom-built, white-label Learning Management System —
+          tailored to your exact requirements. We're putting the finishing touches on the platform.
+        </p>
+
+        <div class="cta">
+          <form class="field" id="notify" novalidate>
+            <label class="visually-hidden" for="email">Your email address</label>
+            <input type="email" id="email" name="email" inputmode="email" autocomplete="email"
+                   placeholder="you@yourorganisation.com" required />
+            <button class="btn" type="submit">
+              Get notified <span class="btn__arrow" aria-hidden="true">→</span>
+            </button>
+          </form>
+        </div>
+        <p class="cta__note">
+          Or reach us directly at <a href="mailto:support@bespokelms.com">support@bespokelms.com</a>.
+        </p>
+
+        <div class="trusted">
+          <p class="trusted__label">Trusted by</p>
+          <p class="trusted__row">
+            <span>Turner Price</span>
+            <span>Vetstream</span>
+            <span>March Foods</span>
+            <span>TeachHQ</span>
+            <span>FoodComplianceHQ</span>
+          </p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="footer__inner">
+      <span>&copy; <span id="year">2026</span> BespokeLMS. All rights reserved.</span>
+      <a href="mailto:support@bespokelms.com">support@bespokelms.com</a>
+    </div>
+  </footer>
+
+  <script>
+    // Footer year without hard-coding
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Progressive "Get notified" — opens the user's mail client (no backend needed for a coming-soon page)
+    document.getElementById('notify').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var input = document.getElementById('email');
+      var addr = (input.value || '').trim();
+      if (!addr || !input.checkValidity()) { input.focus(); return; }
+      var subject = encodeURIComponent('Notify me when BespokeLMS launches');
+      var body = encodeURIComponent('Please add me to the BespokeLMS launch list: ' + addr);
+      window.location.href = 'mailto:support@bespokelms.com?subject=' + subject + '&body=' + body;
+    });
+  </script>
+</body>
+</html>
