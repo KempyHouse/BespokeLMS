@@ -1,0 +1,45 @@
+-- 060: Website CMS core — sites, pages, versioned block trees, media, redirects.
+--
+-- APPLIED to Supabase project pqmdtqsscyltykgcwwus on 2026-07-25 as migration
+-- `bespokelms_web_cms_core_060`.
+--
+-- NUMBERING: the Website & Consent module owns 060-079 (CMS) and 080-099
+-- (consent). The Sales CRM workstream owns 028-059. Both run in parallel and
+-- collided at 044 (bespokelms_crm_deals_import_044 vs
+-- bespokelms_tenant_domains_044); separate blocks end that.
+--
+-- The page model deliberately mirrors nav_menus / nav_menu_versions /
+-- nav_menu_items: a page has versions, a version owns an ordered tree of
+-- blocks, and publishing swaps which version is live.
+--
+-- See the full DDL in the migration as applied; the shape is:
+--
+--   web_sites          (organization_id, key, name, surface, status, settings,
+--                       home_page_id, brand_kit_id, default_locale, locales)
+--   tenant_domains     + site_id  -> the site a host serves
+--   web_pages          (site_id, organization_id, parent_id, slug, path, title,
+--                       template, state, published_version_id, SEO fields)
+--   web_page_versions  (page_id, version_no, state, published_by/at)
+--   web_block_types    (key, label, category, schema jsonb, allowed_surfaces,
+--                       status, requires_purpose, is_data_bound, sort_order)
+--   web_blocks         (version_id, parent_id, block_key, sort_order, visible,
+--                       props jsonb, requires_purpose)
+--   web_media          (organization_id, site_id, path, mime, alt_text NOT NULL)
+--   web_redirects      (site_id, from_path, to_path, status_code)
+--
+-- RLS is org-exact on every table (a tenant's site content is its own), writes
+-- are platform-owner only in this phase, and web_block_types is world-readable
+-- to signed-in users because the catalogue is platform-owned.
+--
+-- The public renderer does NOT rely on these policies: anonymous visitors have
+-- no user token, so App\Support\Supabase\SupabaseWebsite reads with the
+-- service-role key and is the single place allowed to do that. It earns it by
+-- taking the organisation from App\Http\Middleware\ResolveHost (i.e. from the
+-- Host header) and never from request input, and by filtering every public
+-- read on published state.
+--
+-- Seeded alongside: the BespokeLMS marketing site (key
+-- 'bespokelms-marketing', surface marketing, status live), its home page at
+-- '/', version 1 published, and five blocks (hero, stat-row, feature-grid,
+-- course-grid, cta). The statistics and course blocks read live rows at render
+-- time, so no figure on the marketing site is hand-written.
