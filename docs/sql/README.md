@@ -35,6 +35,41 @@ Apply order for the outstanding course work: **003 → 004 → 005 → 006 → 0
 (001, 002 and 008 are already live). 008 depends only on 001 (+ the owner-tier
 policies), so it is independent of the 003–007 course chain.
 
+## 281–289 — the commercial layer (quote to contract)
+
+Applied to the live project on 2026-07-29 via the Supabase MCP, in this order.
+Every one is additive; nothing existing changed behaviour.
+
+Note on the table above: it documents 001–008 only. Migrations 009–280 were
+added without extending it, so each file carries its own header explaining what
+it does and why — that header is the record, not this index.
+
+| # | File | What it does |
+|---|------|--------------|
+| 281 | `281_sales_product_catalogue_and_line_items.sql` | Tenant-scoped product catalogue and priced proposal lines. `esign_line_items.line_total_minor` is a **generated** column, so a stated total can never contradict its own unit price and quantity. Adds `sales_org_access()`, the tenant guard trigger, and `v_esign_document_totals`. |
+| 282 | `282_email_engagement_tracking.sql` | Per-event opens and clicks (`email_engagement_events`), own-redirect tracked links, and a per-tenant switch that cannot be turned on without a recorded lawful basis. Confidence is a first-class column so mail-scanner activity is labelled, not believed. |
+| 283 | `283_notification_domain_add_sales.sql` | Adds `sales` to `notification_domain`. Separate migration because Postgres will not let a new enum value be used in the transaction that adds it. |
+| 284 | `284_contract_clause_library.sql` | Versioned, never-edited-in-place contract clauses; templates composed from them; and what a specific agreement actually used, pinned. `v_contract_clause_usage` answers "which live contracts still carry the old wording". |
+| 285 | `285_negotiation_linkage_and_contracts.sql` | `mail_threads.deal_id` so a negotiation attaches to its opportunity; `crm_deal_offers` for offered/countered/agreed; and `contracts` + commitments + usage measurements, so term, renewal and committed minimums are data rather than prose. |
+| 286 | `286_sales_notification_events.sql` | Four events: proposal opened, proposal link clicked, contract renewal notice due, contract usage measurement due. The two scheduled ones depend on the Laravel Cloud scheduler worker (bug `2cf06b8e`). |
+| 287 | `287_commercial_layer_hardening.sql` | **Security fix.** The three new views ran with owner rights and read straight past row-level security — reported as ERROR by the Supabase advisor. `security_invoker = on` on all three, plus two mutable `search_path` functions pinned. |
+| 288 | `288_revoke_public_execute_on_commercial_functions.sql` | 287's revokes did nothing: Postgres grants EXECUTE to PUBLIC by default, so revoking from `anon`/`authenticated` left the PUBLIC grant in place. Revoked from PUBLIC and granted back only `sales_org_access` to `authenticated`, which RLS policies need. |
+| 289 | `289_bespokelms_product_catalogue_seed.sql` | The real BespokeLMS catalogue — configuration, platform licence, content licence, active user, bespoke course — taken from the executed Turner Price agreement. Not sample data. |
+
+| 290 | `290_course_entitlements_contract_link.sql` | **Contractual entitlements are now identifiable.** Adds `course_entitlements.contract_id`, so a grant a contract obliges can be told apart from a discretionary one — and protected from the course editor's replace-all licensing save, which previously deleted every entitlement for a course and rebuilt it from the form. Adds `v_contracted_course_entitlements`, which answers "are we delivering what we sold". |
+
+| 291 | `291_course_distribution_class_and_visibility_guard.sql` | **Paid content can no longer be given away by accident.** `courses.distribution_class` (`licensed` by default) plus a trigger that refuses `global` scope on licensed content, a recorded-exception table, `v_course_visibility_drift`, and a tier-1 platform monitor. Same shape as the navigation ownership guard, because that pattern works. |
+
+**Two things worth carrying forward.**
+
+A view over an RLS-protected table is a tenant-isolation hole unless it is
+created with `security_invoker = on`. Postgres defaults to the view owner's
+rights. Run the Supabase security advisor after adding any view here.
+
+81 pre-existing functions still carry the default PUBLIC execute grant that 288
+removed from these five. Deliberately not swept — that is its own decision,
+not something to do quietly alongside a feature.
+
 ## Validation
 
 Migrations 003–006 were validated by applying `001`→`00N` in sequence on a
